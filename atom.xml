@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>磊叔的技术博客</title>
+  
+  <subtitle>拥抱开源，拥抱技术分享</subtitle>
+  <link href="http://www.glmapper.com/atom.xml" rel="self"/>
+  
+  <link href="http://www.glmapper.com/"/>
+  <updated>2022-05-25T14:10:12.615Z</updated>
+  <id>http://www.glmapper.com/</id>
+  
+  <author>
+    <name>卫恒</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>修改 YApi 的用户角色(添加管理员)</title>
+    <link href="http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/"/>
+    <id>http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/</id>
+    <published>2022-05-25T14:07:06.000Z</published>
+    <updated>2022-05-25T14:10:12.615Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;YApi 后端使用的是 MongoDB，先进入命令行管理工具：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;mongo&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然后进入 yapi 数据库：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;use</summary>
+        
+      
+    
+    
+    
+    <category term="api" scheme="http://www.glmapper.com/categories/api/"/>
+    
+    
+    <category term="api" scheme="http://www.glmapper.com/tags/api/"/>
+    
+    <category term="yapi" scheme="http://www.glmapper.com/tags/yapi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Spring Cloud Config Nacos 配置热更新分析</title>
+    <link href="http://www.glmapper.com/2022/04/17/config/spring-cloud-config-nacos/"/>
+    <id>http://www.glmapper.com/2022/04/17/config/spring-cloud-config-nacos/</id>
+    <published>2022-04-17T14:05:36.000Z</published>
+    <updated>2022-04-24T09:32:05.810Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://vspicgo.oss-cn-shanghai.aliyuncs.com/des_structure.jpeg&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="Nacos" scheme="http://www.glmapper.com/categories/Nacos/"/>
+    
+    
+    <category term="spring" scheme="http://www.glmapper.com/tags/spring/"/>
+    
+    <category term="spring cloud" scheme="http://www.glmapper.com/tags/spring-cloud/"/>
+    
+    <category term="nacos" scheme="http://www.glmapper.com/tags/nacos/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Spring Cloud Alibaba Nacos Config 是如何读取配置的？</title>
+    <link href="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"/>
+    <id>http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/</id>
+    <published>2022-03-13T03:45:39.000Z</published>
+    <updated>2022-04-24T03:46:42.973Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SpringCloud" scheme="http://www.glmapper.com/categories/SpringCloud/"/>
+    
+    
+    <category term="nacos" scheme="http://www.glmapper.com/tags/nacos/"/>
+    
+    <category term="config" scheme="http://www.glmapper.com/tags/config/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>1 分钟快速上手 Spring Cache</title>
+    <link href="http://www.glmapper.com/2022/02/21/spring/spring-cache-quick-start/"/>
+    <id>http://www.glmapper.com/2022/02/21/spring/spring-cache-quick-start/</id>
+    <published>2022-02-21T03:43:24.000Z</published>
+    <updated>2022-04-24T03:44:46.723Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;如果你现在有一个现成的工程，你想给你工程的某个接口增加缓存，再不可以分布式缓存的情况下，你可以通过以下两步完成 &lt;code&gt;Spring Cache&lt;/code&gt; 接入:&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="spring" scheme="http://www.glmapper.com/categories/spring/"/>
+    
+    
+    <category term="spring" scheme="http://www.glmapper.com/tags/spring/"/>
+    
+    <category term="cache" scheme="http://www.glmapper.com/tags/cache/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2021 年终总结-磊叔的 Work Life Balance</title>
+    <link href="http://www.glmapper.com/2021/12/27/share/shares-2021/"/>
+    <id>http://www.glmapper.com/2021/12/27/share/shares-2021/</id>
+    <published>2021-12-27T03:40:31.000Z</published>
+    <updated>2022-04-24T03:42:42.796Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;生活，在喜怒哀乐间走走停停。不知道会遇见什么，只知道阳光这么好，别辜负了今天&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;抓了一把花生米，开了一罐啤酒，打开新买的台式机，用上被新同事“嫌弃”声音太大的机械键盘，然后以文字的方式来唠一唠我的 2021。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="experience" scheme="http://www.glmapper.com/categories/experience/"/>
+    
+    
+    <category term="SOFA" scheme="http://www.glmapper.com/tags/SOFA/"/>
+    
+    <category term="杭州" scheme="http://www.glmapper.com/tags/%E6%9D%AD%E5%B7%9E/"/>
+    
+    <category term="合肥" scheme="http://www.glmapper.com/tags/%E5%90%88%E8%82%A5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringBoot Actuator 潜在的 OOM 问题</title>
+    <link href="http://www.glmapper.com/2021/11/29/springboot/springboot-series-actuator-oom/"/>
+    <id>http://www.glmapper.com/2021/11/29/springboot/springboot-series-actuator-oom/</id>
+    <published>2021-11-29T03:37:27.000Z</published>
+    <updated>2022-04-24T03:39:18.474Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;此问题背景产生于近期需要上线的一个功能的埋点；主要表现就是在应用启动之后的一段时间内，内存使用一直呈现递增趋势。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SpringBoot" scheme="http://www.glmapper.com/categories/SpringBoot/"/>
+    
+    
+    <category term="OOM" scheme="http://www.glmapper.com/tags/OOM/"/>
+    
+    <category term="SpringBoot" scheme="http://www.glmapper.com/tags/SpringBoot/"/>
+    
+    <category term="actuator" scheme="http://www.glmapper.com/tags/actuator/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>为什么你的 SpringBoot 自动配置失效了</title>
+    <link href="http://www.glmapper.com/2021/11/15/springboot/springboot-series-autoconfigure-invalid/"/>
+    <id>http://www.glmapper.com/2021/11/15/springboot/springboot-series-autoconfigure-invalid/</id>
+    <published>2021-11-15T03:35:18.000Z</published>
+    <updated>2022-04-24T03:36:16.938Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本文源自近期项目中遇到的问题， bug 总是出现在你自以为是的地方…&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SpringBoot" scheme="http://www.glmapper.com/categories/SpringBoot/"/>
+    
+    
+    <category term="SpringBoot" scheme="http://www.glmapper.com/tags/SpringBoot/"/>
+    
+    <category term="自动配置" scheme="http://www.glmapper.com/tags/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>git 中 merge 和 rebase 小记</title>
+    <link href="http://www.glmapper.com/2021/11/09/git/git-cmd-rebase-merge/"/>
+    <id>http://www.glmapper.com/2021/11/09/git/git-cmd-rebase-merge/</id>
+    <published>2021-11-09T03:32:40.000Z</published>
+    <updated>2022-04-24T03:33:46.751Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;作为一线工程师的你，对于 git一定不会陌生，git 作为一个开源的分布式版本控制系统，有着广泛的用户基础。git 使用有很多可视化的工具，idea 自身也大多都集成了 git 套件，如下：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="git" scheme="http://www.glmapper.com/categories/git/"/>
+    
+    
+    <category term="git" scheme="http://www.glmapper.com/tags/git/"/>
+    
+    <category term="merge" scheme="http://www.glmapper.com/tags/merge/"/>
+    
+    <category term="rebase" scheme="http://www.glmapper.com/tags/rebase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>mysql 日志文件</title>
+    <link href="http://www.glmapper.com/2021/11/08/middleware/middleware-mysql-log-file/"/>
+    <id>http://www.glmapper.com/2021/11/08/middleware/middleware-mysql-log-file/</id>
+    <published>2021-11-08T03:30:18.000Z</published>
+    <updated>2022-04-24T03:31:27.318Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;日志文件记录了影响 mysql 数据库的各种类型活动，mysql 中常见的日志文件主要包括以下 4 种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;错误日志&lt;/li&gt;
+&lt;li&gt;二进制日志&lt;/li&gt;
+&lt;li&gt;慢查询日志&lt;/li&gt;
+&lt;li&gt;查询日志&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些日志文件可以帮助我们对mysql数据库的运行状态进行诊断，从而更好的进行数据库层面的优化。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Middleware" scheme="http://www.glmapper.com/categories/Middleware/"/>
+    
+    
+    <category term="mysql" scheme="http://www.glmapper.com/tags/mysql/"/>
+    
+    <category term="log" scheme="http://www.glmapper.com/tags/log/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>聊一聊 Mockito</title>
+    <link href="http://www.glmapper.com/2021/11/06/tests/test-mock-mockito/"/>
+    <id>http://www.glmapper.com/2021/11/06/tests/test-mock-mockito/</id>
+    <published>2021-11-06T03:26:33.000Z</published>
+    <updated>2022-04-24T03:29:36.816Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Mockito 是 mocking 框架，它让你用简洁的API做测试。而且 Mockito 简单易学，它可读性强和验证语法简洁。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
+    
+    <category term="mock" scheme="http://www.glmapper.com/tags/mock/"/>
+    
+    <category term="Mockito" scheme="http://www.glmapper.com/tags/Mockito/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JVM-Java 对象模型</title>
+    <link href="http://www.glmapper.com/2021/11/05/jvm/jvm-openjdk-oop-klass/"/>
+    <id>http://www.glmapper.com/2021/11/05/jvm/jvm-openjdk-oop-klass/</id>
+    <published>2021-11-05T03:23:39.000Z</published>
+    <updated>2022-04-24T03:25:44.859Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Java对象保存在堆内存中。在内存中，一个Java对象包含三部分：对象头、实例数据和对齐填充。其中对象头是一个很关键的部分，因为对象头中包含锁状态标志、线程持有的锁等标志。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="jvm" scheme="http://www.glmapper.com/categories/jvm/"/>
+    
+    
+    <category term="jvm" scheme="http://www.glmapper.com/tags/jvm/"/>
+    
+    <category term="oop-klass" scheme="http://www.glmapper.com/tags/oop-klass/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>finalize 方法重写对 GC 的影响分析</title>
+    <link href="http://www.glmapper.com/2021/11/02/java/java-advance-gc-finalize/"/>
+    <id>http://www.glmapper.com/2021/11/02/java/java-advance-gc-finalize/</id>
+    <published>2021-11-02T03:17:56.000Z</published>
+    <updated>2022-04-24T03:21:21.447Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;关于 Object 的 finalize 方法，在日常开发中可能有超过 99% 的人都没有关注过，因为业务开发很少有重写 finalize 方法的场景；开发者对于 finalize 的认知大多在是“面试八股文”中，而且也不乏见到将 finalize、finally 以及 final 放在一块比较的 case，面试官可能是出于对初学者 java 基本语言知识的考量，但是这真的有意义吗？&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SOFA" scheme="http://www.glmapper.com/categories/SOFA/"/>
+    
+    
+    <category term="SOFAArk" scheme="http://www.glmapper.com/tags/SOFAArk/"/>
+    
+    <category term="ClassLoader" scheme="http://www.glmapper.com/tags/ClassLoader/"/>
+    
+    <category term="gc" scheme="http://www.glmapper.com/tags/gc/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>log4j2 日志 PatternLayout 配置对 SOFAArk PluginClassLoader 的影响</title>
+    <link href="http://www.glmapper.com/2021/11/01/sofa/sofa-ark-plugin-classloader-log4j/"/>
+    <id>http://www.glmapper.com/2021/11/01/sofa/sofa-ark-plugin-classloader-log4j/</id>
+    <published>2021-11-01T03:10:19.000Z</published>
+    <updated>2022-04-24T03:25:15.660Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;log4j2 相关类在 sofaark 插件中是导出的，因此当出现 log4j2 的类需要被加载时，会委托给 PluginClassLoader 进行加载。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SOFA" scheme="http://www.glmapper.com/categories/SOFA/"/>
+    
+    
+    <category term="SOFAArk" scheme="http://www.glmapper.com/tags/SOFAArk/"/>
+    
+    <category term="ClassLoader" scheme="http://www.glmapper.com/tags/ClassLoader/"/>
+    
+    <category term="类加载" scheme="http://www.glmapper.com/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/"/>
+    
+    <category term="log" scheme="http://www.glmapper.com/tags/log/"/>
+    
+    <category term="gc" scheme="http://www.glmapper.com/tags/gc/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>记：SOFA Meepup 合肥站-SOFA 微服务体系技术生态于实践</title>
+    <link href="http://www.glmapper.com/2021/07/25/share/shares-sofa-meetup-7/"/>
+    <id>http://www.glmapper.com/2021/07/25/share/shares-sofa-meetup-7/</id>
+    <published>2021-07-25T08:06:55.000Z</published>
+    <updated>2022-04-23T07:07:47.288Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;SOFA Meepup 合肥站从 5 月份开始筹划，至 7.24 在合肥成功举办，历时 2 个多月的时间，从到场人数来看，并没有受到大雨的影响，合肥开发者同学对于技术的热衷没有我们预想的那么佛系，尤其是在微服务领域。在线观看人数也大于预测，这对于所有参与组织活动的同学及给予大力支持的社区来说，都是极大的鼓励和反馈。&lt;/p&gt;
+&lt;p&gt;点点滴滴，希望以文字的形式记录下来，记录这次活动之旅。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="experience" scheme="http://www.glmapper.com/categories/experience/"/>
+    
+    
+    <category term="SOFA" scheme="http://www.glmapper.com/tags/SOFA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 docker 部署 kafka 集群</title>
+    <link href="http://www.glmapper.com/2021/07/23/docker/docker-compose-kakfa-install/"/>
+    <id>http://www.glmapper.com/2021/07/23/docker/docker-compose-kakfa-install/</id>
+    <published>2021-07-23T13:47:16.000Z</published>
+    <updated>2022-04-21T14:13:46.754Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;参考文档：&lt;a href=&quot;https://github.com/wurstmeister/kafka-docker&quot;&gt;https://github.com/wurstmeister/kafka-docker&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在你的文件系统中找个目录，然后新建一个 docker-compose.yaml 文件&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;➜  kafka-guides &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;total 8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;-rw-r--r--@ 1 sgl  staff   1.1K  7 13 21:56 docker-compose.yaml&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;编辑 docker-compose.yaml 文件&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="docker" scheme="http://www.glmapper.com/categories/docker/"/>
+    
+    
+    <category term="docker" scheme="http://www.glmapper.com/tags/docker/"/>
+    
+    <category term="kafka" scheme="http://www.glmapper.com/tags/kafka/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringAop 代理模式及 AopContext 问题小记</title>
+    <link href="http://www.glmapper.com/2021/07/17/spring/spring-proxy-aopcontext/"/>
+    <id>http://www.glmapper.com/2021/07/17/spring/spring-proxy-aopcontext/</id>
+    <published>2021-07-17T08:17:04.000Z</published>
+    <updated>2022-04-21T10:18:33.012Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;AOP 称为面向切面编程，其底层原理就是动态代理；JAVA 中比较常见的动态代理有两种，分别是 JDK 动态代理和 CGLIB 动态代理，这点从 Spring Aop 的 AopProxy 的实现就可以得出验证。&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;AopProxy&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    --- JdkDynamicAopProxy&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    --- CglibAopProxy&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;Spring 作为 Java 应用领域最牛 X 的基础框架产品，在对于一些版本变更导致的兼容性问题的处理上一直被诟病，对于这两种代理方式的选择上，Spring 不同版本存在一定的差异，这也是本文产生的一个原因。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="spring" scheme="http://www.glmapper.com/categories/spring/"/>
+    
+    
+    <category term="aop" scheme="http://www.glmapper.com/tags/aop/"/>
+    
+    <category term="spring" scheme="http://www.glmapper.com/tags/spring/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>你知道 Junit 是怎么跑的吗？</title>
+    <link href="http://www.glmapper.com/2021/07/02/tests/test-junit-run-principle/"/>
+    <id>http://www.glmapper.com/2021/07/02/tests/test-junit-run-principle/</id>
+    <published>2021-07-02T13:47:16.000Z</published>
+    <updated>2022-04-24T03:07:40.745Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Junit 是由 Kent Beck 和 Erich Gamma 于 1995 年底着手编写的框架，自此以后，Junit 框架日益普及，现在已经成为单元测试 Java 应用程序的事实上的标准。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在软件开发领域中，从来没有这样的事情：少数几行代码对大量代码起着如此重要的作用 — Martin Fowler&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
+    
+    <category term="junit" scheme="http://www.glmapper.com/tags/junit/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>test-test-double</title>
+    <link href="http://www.glmapper.com/2021/06/01/tests/test-test-double/"/>
+    <id>http://www.glmapper.com/2021/06/01/tests/test-test-double/</id>
+    <published>2021-06-01T03:07:53.000Z</published>
+    <updated>2022-04-24T03:09:10.406Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;TestDouble 简单理解就是测试替身，在多数情况下，我们的系统能够正常运行，不仅仅依托系统本身，还需要依赖一些外部服务，比如其他系统提供的 http、rpc 服务，系统自身以来的像 redis 缓存服务或者 mysql 这类数据库服务。在微服务场景下，业务按照业务领域将一个系统拆分为多个系统，系统之间的交互不仅仅是简单的 A-&amp;gt;B，可能是 A -&amp;gt;B -&amp;gt; C -&amp;gt;D，对于编写单元测试的开发者来说，当我需要编写系统A 的测试用例时，不可能去构建完整的调用链路，那么在测试工程中，通常会以 “测试替身” 来解决外部依赖所带来的测试复杂性问题。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
+    
+    <category term="TestDouble" scheme="http://www.glmapper.com/tags/TestDouble/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>聊一聊 maven 生命周期和 maven 插件编写</title>
+    <link href="http://www.glmapper.com/2021/01/19/maven/maven-plugin-lifecycle-program/"/>
+    <id>http://www.glmapper.com/2021/01/19/maven/maven-plugin-lifecycle-program/</id>
+    <published>2021-01-19T03:05:33.000Z</published>
+    <updated>2022-04-24T03:07:03.106Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;原文：&lt;a href=&quot;https://juejin.cn/post/6919490393893502984&quot;&gt;https://juejin.cn/post/6919490393893502984&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;最近接到一个业务同学的诉求：用户会在他们大数据平台新建很多模型表，但是再编写业务代码时，需要手动的去创建和模型表对应的 DO 类，那对于有少量表的情况还可以接受，但是对于十几张甚至几十张表的情况，就会很头疼。&lt;/p&gt;
+&lt;p&gt;我们知道 mybatis 实际上是有提供类似插件工具（mybatis-generator）的，社区也有非常多类似的代码生成工具，但是受限于一些情况，没有办法采用它们，那最简单的就是自己写个插件来完成这种工作量大且重复性高的事情。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="maven" scheme="http://www.glmapper.com/categories/maven/"/>
+    
+    
+    <category term="maven" scheme="http://www.glmapper.com/tags/maven/"/>
+    
+    <category term="maven plugin" scheme="http://www.glmapper.com/tags/maven-plugin/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>启动一个没有 main 函数的 java 程序</title>
+    <link href="http://www.glmapper.com/2021/01/17/java/java-base-non-main/"/>
+    <id>http://www.glmapper.com/2021/01/17/java/java-base-non-main/</id>
+    <published>2021-01-17T03:01:11.000Z</published>
+    <updated>2022-04-24T03:04:29.286Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;原文：&lt;a href=&quot;https://juejin.cn/post/6918637397857009677&quot;&gt;https://juejin.cn/post/6918637397857009677&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;作为一名 &lt;code&gt;JAVA&lt;/code&gt; 开发者，不知道大家有没有去想过，&lt;code&gt;JAVA&lt;/code&gt;  程序为什么一定要从 main 函数执行开始，其实关于这个话题，我大概从网上搜了下，其实不乏有 &lt;strong&gt;main 方法是我们学习Java语言学习的第一个方法，也是每个 java 使用者最熟悉的方法, 每个 Java 应用程序都必须有且仅有一个 main 方法&lt;/strong&gt; 这种说法。那么真的是这样吗？今天就来聊聊这个事情。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="JAVA" scheme="http://www.glmapper.com/categories/JAVA/"/>
+    
+    
+    <category term="java" scheme="http://www.glmapper.com/tags/java/"/>
+    
+    <category term="FX Application" scheme="http://www.glmapper.com/tags/FX-Application/"/>
+    
+  </entry>
+  
+</feed>
