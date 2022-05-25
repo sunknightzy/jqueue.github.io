@@ -6,7 +6,7 @@
   <link href="http://www.glmapper.com/atom.xml" rel="self"/>
   
   <link href="http://www.glmapper.com/"/>
-  <updated>2022-05-25T14:10:12.615Z</updated>
+  <updated>2022-05-25T14:16:17.361Z</updated>
   <id>http://www.glmapper.com/</id>
   
   <author>
@@ -21,22 +21,14 @@
     <link href="http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/"/>
     <id>http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/</id>
     <published>2022-05-25T14:07:06.000Z</published>
-    <updated>2022-05-25T14:10:12.615Z</updated>
+    <updated>2022-05-25T14:16:17.361Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;p&gt;YApi 后端使用的是 MongoDB，先进入命令行管理工具：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;mongo&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;然后进入 yapi 数据库：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;use</summary>
-        
-      
+&lt;p&gt;然后进入 yapi 数据库：&lt;/p&gt;</summary>
     
     
     
