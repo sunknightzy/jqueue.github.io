@@ -58,6 +58,29 @@
   </entry>
   
   <entry>
+    <title>聊 一聊 maven 测试相关的插件</title>
+    <link href="http://www.glmapper.com/2022/07/31/maven/maven-plugin-about-test/"/>
+    <id>http://www.glmapper.com/2022/07/31/maven/maven-plugin-about-test/</id>
+    <published>2022-07-31T03:09:51.000Z</published>
+    <updated>2022-09-12T03:12:02.249Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;在之前的 &lt;a href=&quot;https://juejin.cn/post/6919490393893502984&quot;&gt;聊一聊 maven 生命周期和 maven 插件编写&lt;/a&gt; 这篇文章中，简单聊了点maven 构建生命周期和如何编写一个 maven 插件。本篇文章从插件入手，来探讨下 maven 中那些于测试相关的插件，这些插件与工程师日常开发是密切相关的，可能很多情况下你不需要关注，因为已经有前辈帮你搞完了；“事不关己高高挂起” 与 “知其然知其所以然” 是两种不同的态度，对待技术，我建议是后者！&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="maven" scheme="http://www.glmapper.com/categories/maven/"/>
+    
+    
+    <category term="maven" scheme="http://www.glmapper.com/tags/maven/"/>
+    
+    <category term="maven plugin" scheme="http://www.glmapper.com/tags/maven-plugin/"/>
+    
+    <category term="testing" scheme="http://www.glmapper.com/tags/testing/"/>
+    
+  </entry>
+  
+  <entry>
     <title>修改 YApi 的用户角色(添加管理员)</title>
     <link href="http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/"/>
     <id>http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/</id>
@@ -460,27 +483,6 @@
     <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
     
     <category term="junit" scheme="http://www.glmapper.com/tags/junit/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>test-test-double</title>
-    <link href="http://www.glmapper.com/2021/06/01/tests/test-test-double/"/>
-    <id>http://www.glmapper.com/2021/06/01/tests/test-test-double/</id>
-    <published>2021-06-01T03:07:53.000Z</published>
-    <updated>2022-04-24T03:09:10.406Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;TestDouble 简单理解就是测试替身，在多数情况下，我们的系统能够正常运行，不仅仅依托系统本身，还需要依赖一些外部服务，比如其他系统提供的 http、rpc 服务，系统自身以来的像 redis 缓存服务或者 mysql 这类数据库服务。在微服务场景下，业务按照业务领域将一个系统拆分为多个系统，系统之间的交互不仅仅是简单的 A-&amp;gt;B，可能是 A -&amp;gt;B -&amp;gt; C -&amp;gt;D，对于编写单元测试的开发者来说，当我需要编写系统A 的测试用例时，不可能去构建完整的调用链路，那么在测试工程中，通常会以 “测试替身” 来解决外部依赖所带来的测试复杂性问题。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
-    
-    
-    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
-    
-    <category term="TestDouble" scheme="http://www.glmapper.com/tags/TestDouble/"/>
     
   </entry>
   
