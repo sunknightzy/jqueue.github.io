@@ -6,7 +6,7 @@
   <link href="http://www.glmapper.com/atom.xml" rel="self"/>
   
   <link href="http://www.glmapper.com/"/>
-  <updated>2022-05-25T14:16:17.361Z</updated>
+  <updated>2022-09-12T01:07:34.549Z</updated>
   <id>http://www.glmapper.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>你知道 @Async 是怎么让方法异步执行的吗？</title>
+    <link href="http://www.glmapper.com/22022/09/12/springboot/spring-boot-async-anno/"/>
+    <id>http://www.glmapper.com/22022/09/12/springboot/spring-boot-async-anno/</id>
+    <published>+022022-09-12T01:05:44.000Z</published>
+    <updated>2022-09-12T01:07:34.549Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;在阅读本文之前，你可以通过 &lt;a href=&quot;https://spring.io/guides/gs/async-method/&quot;&gt;Creating Asynchronous Methods&lt;/a&gt;</summary>
+        
+      
+    
+    
+    
+    <category term="SpringBoot" scheme="http://www.glmapper.com/categories/SpringBoot/"/>
+    
+    
+    <category term="SpringBoot" scheme="http://www.glmapper.com/tags/SpringBoot/"/>
+    
+  </entry>
   
   <entry>
     <title>修改 YApi 的用户角色(添加管理员)</title>
@@ -465,30 +490,6 @@
     <category term="maven" scheme="http://www.glmapper.com/tags/maven/"/>
     
     <category term="maven plugin" scheme="http://www.glmapper.com/tags/maven-plugin/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>启动一个没有 main 函数的 java 程序</title>
-    <link href="http://www.glmapper.com/2021/01/17/java/java-base-non-main/"/>
-    <id>http://www.glmapper.com/2021/01/17/java/java-base-non-main/</id>
-    <published>2021-01-17T03:01:11.000Z</published>
-    <updated>2022-04-24T03:04:29.286Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;原文：&lt;a href=&quot;https://juejin.cn/post/6918637397857009677&quot;&gt;https://juejin.cn/post/6918637397857009677&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;作为一名 &lt;code&gt;JAVA&lt;/code&gt; 开发者，不知道大家有没有去想过，&lt;code&gt;JAVA&lt;/code&gt;  程序为什么一定要从 main 函数执行开始，其实关于这个话题，我大概从网上搜了下，其实不乏有 &lt;strong&gt;main 方法是我们学习Java语言学习的第一个方法，也是每个 java 使用者最熟悉的方法, 每个 Java 应用程序都必须有且仅有一个 main 方法&lt;/strong&gt; 这种说法。那么真的是这样吗？今天就来聊聊这个事情。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="JAVA" scheme="http://www.glmapper.com/categories/JAVA/"/>
-    
-    
-    <category term="java" scheme="http://www.glmapper.com/tags/java/"/>
-    
-    <category term="FX Application" scheme="http://www.glmapper.com/tags/FX-Application/"/>
     
   </entry>
   
