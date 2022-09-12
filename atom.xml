@@ -37,6 +37,27 @@
   </entry>
   
   <entry>
+    <title>浅析 SOFA 注册中心数据同步</title>
+    <link href="http://www.glmapper.com/2022/09/12/sofa/sofa-registry-sync-data/"/>
+    <id>http://www.glmapper.com/2022/09/12/sofa/sofa-registry-sync-data/</id>
+    <published>2022-09-12T02:58:30.000Z</published>
+    <updated>2022-09-12T03:00:03.890Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本篇主要对 SOFARegistry 的数据同步模块进行解析，对于注册中心的概念以及 SOFARegistry 的基础架构不做过多阐述，相关介绍可以见&lt;a href=&quot;%5Bhttps://www.sofastack.tech/blog/sofa-registry-introduction/%5D(https://www.sofastack.tech/blog/sofa-registry-introduction/)&quot;&gt;海量数据下的注册中心 - SOFARegistry 架构介绍&lt;/a&gt; 这篇文章。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SOFA" scheme="http://www.glmapper.com/categories/SOFA/"/>
+    
+    
+    <category term="分布式" scheme="http://www.glmapper.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    <category term="注册中心" scheme="http://www.glmapper.com/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"/>
+    
+  </entry>
+  
+  <entry>
     <title>修改 YApi 的用户角色(添加管理员)</title>
     <link href="http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/"/>
     <id>http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/</id>
@@ -460,31 +481,6 @@
     <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
     
     <category term="TestDouble" scheme="http://www.glmapper.com/tags/TestDouble/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>聊一聊 maven 生命周期和 maven 插件编写</title>
-    <link href="http://www.glmapper.com/2021/01/19/maven/maven-plugin-lifecycle-program/"/>
-    <id>http://www.glmapper.com/2021/01/19/maven/maven-plugin-lifecycle-program/</id>
-    <published>2021-01-19T03:05:33.000Z</published>
-    <updated>2022-04-24T03:07:03.106Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;原文：&lt;a href=&quot;https://juejin.cn/post/6919490393893502984&quot;&gt;https://juejin.cn/post/6919490393893502984&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;最近接到一个业务同学的诉求：用户会在他们大数据平台新建很多模型表，但是再编写业务代码时，需要手动的去创建和模型表对应的 DO 类，那对于有少量表的情况还可以接受，但是对于十几张甚至几十张表的情况，就会很头疼。&lt;/p&gt;
-&lt;p&gt;我们知道 mybatis 实际上是有提供类似插件工具（mybatis-generator）的，社区也有非常多类似的代码生成工具，但是受限于一些情况，没有办法采用它们，那最简单的就是自己写个插件来完成这种工作量大且重复性高的事情。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="maven" scheme="http://www.glmapper.com/categories/maven/"/>
-    
-    
-    <category term="maven" scheme="http://www.glmapper.com/tags/maven/"/>
-    
-    <category term="maven plugin" scheme="http://www.glmapper.com/tags/maven-plugin/"/>
     
   </entry>
   
