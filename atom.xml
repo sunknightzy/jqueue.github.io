@@ -37,6 +37,70 @@
   </entry>
   
   <entry>
+    <title>RocketMQ Push 消费模型</title>
+    <link href="http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-push-consumer-model/"/>
+    <id>http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-push-consumer-model/</id>
+    <published>2022-09-22T13:31:29.000Z</published>
+    <updated>2022-09-22T13:32:31.298Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Push 模式是指由 Server 端来控制消息的推送，即当有消息到 Server 之后，会将消息主动投递给 client(Consumer 端)。&lt;/p&gt;
+&lt;h2 id=&quot;使用-DefaultMQPushConsumer-消费消息&quot;&gt;&lt;a href=&quot;#使用-DefaultMQPushConsumer-消费消息&quot; class=&quot;headerlink&quot; title=&quot;使用 DefaultMQPushConsumer 消费消息&quot;&gt;&lt;/a&gt;使用 DefaultMQPushConsumer 消费消息&lt;/h2&gt;&lt;p&gt;下面是使用 DefaultMQPushConsumer 消费消息的官方示例代码：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="RocketMQ" scheme="http://www.glmapper.com/categories/RocketMQ/"/>
+    
+    
+    <category term="RocketMQ" scheme="http://www.glmapper.com/tags/RocketMQ/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>RocketMQ 本地部署问题总结</title>
+    <link href="http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-deploy-issue/"/>
+    <id>http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-deploy-issue/</id>
+    <published>2022-09-22T13:29:02.000Z</published>
+    <updated>2022-09-22T13:32:35.514Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;本篇分为 RocketMQ 部署和 RocketMQ-dashboard 部署两部分，主要是 RocketMQ 部署问题较多，汇总了下网上各路大神以及官方 issue 的讨论汇总而来。&lt;/p&gt;
+&lt;h2 id=&quot;RocketMQ-部署&quot;&gt;&lt;a href=&quot;#RocketMQ-部署&quot; class=&quot;headerlink&quot; title=&quot;RocketMQ 部署&quot;&gt;&lt;/a&gt;RocketMQ 部署&lt;/h2&gt;&lt;p&gt;根据官方的&lt;a href=&quot;https://rocketmq.apache.org/docs/%E4%BB%8B%E7%BB%8D/02quickstart&quot;&gt;快速开始&lt;/a&gt; 尝试在本地部署 RocketMQ；如果你是按照官方文档直接来搞，可能 90% 是不可能成功的。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="RocketMQ" scheme="http://www.glmapper.com/categories/RocketMQ/"/>
+    
+    
+    <category term="RocketMQ" scheme="http://www.glmapper.com/tags/RocketMQ/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ab 测试</title>
+    <link href="http://www.glmapper.com/2022/09/22/tests/test-benchmark-ab/"/>
+    <id>http://www.glmapper.com/2022/09/22/tests/test-benchmark-ab/</id>
+    <published>2022-09-22T13:26:42.000Z</published>
+    <updated>2022-09-22T13:28:39.666Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;Apache-Benchmark-Tool&quot;&gt;&lt;a href=&quot;#Apache-Benchmark-Tool&quot; class=&quot;headerlink&quot; title=&quot;Apache Benchmark Tool&quot;&gt;&lt;/a&gt;Apache Benchmark Tool&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;ab is a tool for benchmarking your Apache Hypertext Transfer Protocol (HTTP) server. It is designed to give you an impression of how your current Apache installation performs. This especially shows you how many requests per second your Apache installation is capable of serving.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;ab 是 apache http server 基准测试工具，它可以帮助我们去了解当前服务的表现，如每秒请求数等。下面是 ab 对应的所有 options 摘要信息：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
+    
+    
+    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
+    
+    <category term="ab test" scheme="http://www.glmapper.com/tags/ab-test/"/>
+    
+  </entry>
+  
+  <entry>
     <title>浅析 SOFA 注册中心数据同步</title>
     <link href="http://www.glmapper.com/2022/09/12/sofa/sofa-registry-sync-data/"/>
     <id>http://www.glmapper.com/2022/09/12/sofa/sofa-registry-sync-data/</id>
@@ -408,81 +472,6 @@
     
     
     <category term="SOFA" scheme="http://www.glmapper.com/tags/SOFA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>使用 docker 部署 kafka 集群</title>
-    <link href="http://www.glmapper.com/2021/07/23/docker/docker-compose-kakfa-install/"/>
-    <id>http://www.glmapper.com/2021/07/23/docker/docker-compose-kakfa-install/</id>
-    <published>2021-07-23T13:47:16.000Z</published>
-    <updated>2022-04-21T14:13:46.754Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;参考文档：&lt;a href=&quot;https://github.com/wurstmeister/kafka-docker&quot;&gt;https://github.com/wurstmeister/kafka-docker&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;在你的文件系统中找个目录，然后新建一个 docker-compose.yaml 文件&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;➜  kafka-guides &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;total 8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;-rw-r--r--@ 1 sgl  staff   1.1K  7 13 21:56 docker-compose.yaml&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;编辑 docker-compose.yaml 文件&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="docker" scheme="http://www.glmapper.com/categories/docker/"/>
-    
-    
-    <category term="docker" scheme="http://www.glmapper.com/tags/docker/"/>
-    
-    <category term="kafka" scheme="http://www.glmapper.com/tags/kafka/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringAop 代理模式及 AopContext 问题小记</title>
-    <link href="http://www.glmapper.com/2021/07/17/spring/spring-proxy-aopcontext/"/>
-    <id>http://www.glmapper.com/2021/07/17/spring/spring-proxy-aopcontext/</id>
-    <published>2021-07-17T08:17:04.000Z</published>
-    <updated>2022-04-21T10:18:33.012Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;AOP 称为面向切面编程，其底层原理就是动态代理；JAVA 中比较常见的动态代理有两种，分别是 JDK 动态代理和 CGLIB 动态代理，这点从 Spring Aop 的 AopProxy 的实现就可以得出验证。&lt;/p&gt;
-&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;AopProxy&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    --- JdkDynamicAopProxy&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    --- CglibAopProxy&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;Spring 作为 Java 应用领域最牛 X 的基础框架产品，在对于一些版本变更导致的兼容性问题的处理上一直被诟病，对于这两种代理方式的选择上，Spring 不同版本存在一定的差异，这也是本文产生的一个原因。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="spring" scheme="http://www.glmapper.com/categories/spring/"/>
-    
-    
-    <category term="aop" scheme="http://www.glmapper.com/tags/aop/"/>
-    
-    <category term="spring" scheme="http://www.glmapper.com/tags/spring/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>你知道 Junit 是怎么跑的吗？</title>
-    <link href="http://www.glmapper.com/2021/07/02/tests/test-junit-run-principle/"/>
-    <id>http://www.glmapper.com/2021/07/02/tests/test-junit-run-principle/</id>
-    <published>2021-07-02T13:47:16.000Z</published>
-    <updated>2022-04-24T03:07:40.745Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;Junit 是由 Kent Beck 和 Erich Gamma 于 1995 年底着手编写的框架，自此以后，Junit 框架日益普及，现在已经成为单元测试 Java 应用程序的事实上的标准。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;在软件开发领域中，从来没有这样的事情：少数几行代码对大量代码起着如此重要的作用 — Martin Fowler&lt;/p&gt;
-&lt;/blockquote&gt;</summary>
-    
-    
-    
-    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
-    
-    
-    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
-    
-    <category term="junit" scheme="http://www.glmapper.com/tags/junit/"/>
     
   </entry>
   
