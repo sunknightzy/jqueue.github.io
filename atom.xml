@@ -3,11 +3,11 @@
   <title>J.Queue的技术博客</title>
   
   <subtitle>拥抱开源，拥抱技术分享</subtitle>
-  <link href="http://www.glmapper.com/atom.xml" rel="self"/>
+  <link href="http://sunknightzy.github.io/atom.xml" rel="self"/>
   
-  <link href="http://www.glmapper.com/"/>
+  <link href="http://sunknightzy.github.io/"/>
   <updated>2022-09-12T01:39:15.766Z</updated>
-  <id>http://www.glmapper.com/</id>
+  <id>http://sunknightzy.github.io/</id>
   
   <author>
     <name>J.Queue</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>你知道 @Async 是怎么让方法异步执行的吗？</title>
-    <link href="http://www.glmapper.com/22022/09/12/springboot/spring-boot-async-anno/"/>
-    <id>http://www.glmapper.com/22022/09/12/springboot/spring-boot-async-anno/</id>
+    <link href="http://sunknightzy.github.io/22022/09/12/springboot/spring-boot-async-anno/"/>
+    <id>http://sunknightzy.github.io/22022/09/12/springboot/spring-boot-async-anno/</id>
     <published>+022022-09-12T01:05:44.000Z</published>
     <updated>2022-09-12T01:39:15.766Z</updated>
     
@@ -29,17 +29,17 @@
     
     
     
-    <category term="SpringBoot" scheme="http://www.glmapper.com/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://sunknightzy.github.io/categories/SpringBoot/"/>
     
     
-    <category term="SpringBoot" scheme="http://www.glmapper.com/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://sunknightzy.github.io/tags/SpringBoot/"/>
     
   </entry>
   
   <entry>
     <title>RocketMQ Push 消费模型</title>
-    <link href="http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-push-consumer-model/"/>
-    <id>http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-push-consumer-model/</id>
+    <link href="http://sunknightzy.github.io/2022/09/22/mq/rocketmq/rocketmq-push-consumer-model/"/>
+    <id>http://sunknightzy.github.io/2022/09/22/mq/rocketmq/rocketmq-push-consumer-model/</id>
     <published>2022-09-22T13:31:29.000Z</published>
     <updated>2022-09-22T13:32:31.298Z</updated>
     
@@ -49,17 +49,17 @@
     
     
     
-    <category term="RocketMQ" scheme="http://www.glmapper.com/categories/RocketMQ/"/>
+    <category term="RocketMQ" scheme="http://sunknightzy.github.io/categories/RocketMQ/"/>
     
     
-    <category term="RocketMQ" scheme="http://www.glmapper.com/tags/RocketMQ/"/>
+    <category term="RocketMQ" scheme="http://sunknightzy.github.io/tags/RocketMQ/"/>
     
   </entry>
   
   <entry>
     <title>RocketMQ 本地部署问题总结</title>
-    <link href="http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-deploy-issue/"/>
-    <id>http://www.glmapper.com/2022/09/22/mq/rocketmq/rocketmq-deploy-issue/</id>
+    <link href="http://sunknightzy.github.io/2022/09/22/mq/rocketmq/rocketmq-deploy-issue/"/>
+    <id>http://sunknightzy.github.io/2022/09/22/mq/rocketmq/rocketmq-deploy-issue/</id>
     <published>2022-09-22T13:29:02.000Z</published>
     <updated>2022-09-22T13:32:35.514Z</updated>
     
@@ -69,17 +69,17 @@
     
     
     
-    <category term="RocketMQ" scheme="http://www.glmapper.com/categories/RocketMQ/"/>
+    <category term="RocketMQ" scheme="http://sunknightzy.github.io/categories/RocketMQ/"/>
     
     
-    <category term="RocketMQ" scheme="http://www.glmapper.com/tags/RocketMQ/"/>
+    <category term="RocketMQ" scheme="http://sunknightzy.github.io/tags/RocketMQ/"/>
     
   </entry>
   
   <entry>
     <title>ab 测试</title>
-    <link href="http://www.glmapper.com/2022/09/22/tests/test-benchmark-ab/"/>
-    <id>http://www.glmapper.com/2022/09/22/tests/test-benchmark-ab/</id>
+    <link href="http://sunknightzy.github.io/2022/09/22/tests/test-benchmark-ab/"/>
+    <id>http://sunknightzy.github.io/2022/09/22/tests/test-benchmark-ab/</id>
     <published>2022-09-22T13:26:42.000Z</published>
     <updated>2022-09-22T13:28:39.666Z</updated>
     
@@ -91,19 +91,19 @@
     
     
     
-    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
+    <category term="test" scheme="http://sunknightzy.github.io/categories/test/"/>
     
     
-    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
+    <category term="test" scheme="http://sunknightzy.github.io/tags/test/"/>
     
-    <category term="ab test" scheme="http://www.glmapper.com/tags/ab-test/"/>
+    <category term="ab test" scheme="http://sunknightzy.github.io/tags/ab-test/"/>
     
   </entry>
   
   <entry>
     <title>浅析 SOFA 注册中心数据同步</title>
-    <link href="http://www.glmapper.com/2022/09/12/sofa/sofa-registry-sync-data/"/>
-    <id>http://www.glmapper.com/2022/09/12/sofa/sofa-registry-sync-data/</id>
+    <link href="http://sunknightzy.github.io/2022/09/12/sofa/sofa-registry-sync-data/"/>
+    <id>http://sunknightzy.github.io/2022/09/12/sofa/sofa-registry-sync-data/</id>
     <published>2022-09-12T02:58:30.000Z</published>
     <updated>2022-09-12T03:00:03.890Z</updated>
     
@@ -112,19 +112,19 @@
     
     
     
-    <category term="SOFA" scheme="http://www.glmapper.com/categories/SOFA/"/>
+    <category term="SOFA" scheme="http://sunknightzy.github.io/categories/SOFA/"/>
     
     
-    <category term="分布式" scheme="http://www.glmapper.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    <category term="分布式" scheme="http://sunknightzy.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
-    <category term="注册中心" scheme="http://www.glmapper.com/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"/>
+    <category term="注册中心" scheme="http://sunknightzy.github.io/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"/>
     
   </entry>
   
   <entry>
     <title>聊 一聊 maven 测试相关的插件</title>
-    <link href="http://www.glmapper.com/2022/07/31/maven/maven-plugin-about-test/"/>
-    <id>http://www.glmapper.com/2022/07/31/maven/maven-plugin-about-test/</id>
+    <link href="http://sunknightzy.github.io/2022/07/31/maven/maven-plugin-about-test/"/>
+    <id>http://sunknightzy.github.io/2022/07/31/maven/maven-plugin-about-test/</id>
     <published>2022-07-31T03:09:51.000Z</published>
     <updated>2022-09-12T03:12:02.249Z</updated>
     
@@ -133,21 +133,21 @@
     
     
     
-    <category term="maven" scheme="http://www.glmapper.com/categories/maven/"/>
+    <category term="maven" scheme="http://sunknightzy.github.io/categories/maven/"/>
     
     
-    <category term="maven" scheme="http://www.glmapper.com/tags/maven/"/>
+    <category term="maven" scheme="http://sunknightzy.github.io/tags/maven/"/>
     
-    <category term="maven plugin" scheme="http://www.glmapper.com/tags/maven-plugin/"/>
+    <category term="maven plugin" scheme="http://sunknightzy.github.io/tags/maven-plugin/"/>
     
-    <category term="testing" scheme="http://www.glmapper.com/tags/testing/"/>
+    <category term="testing" scheme="http://sunknightzy.github.io/tags/testing/"/>
     
   </entry>
   
   <entry>
     <title>修改 YApi 的用户角色(添加管理员)</title>
-    <link href="http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/"/>
-    <id>http://www.glmapper.com/2022/05/25/api/api-yapi-change-user-role-by-mongo/</id>
+    <link href="http://sunknightzy.github.io/2022/05/25/api/api-yapi-change-user-role-by-mongo/"/>
+    <id>http://sunknightzy.github.io/2022/05/25/api/api-yapi-change-user-role-by-mongo/</id>
     <published>2022-05-25T14:07:06.000Z</published>
     <updated>2022-05-25T14:16:17.361Z</updated>
     
@@ -160,19 +160,19 @@
     
     
     
-    <category term="api" scheme="http://www.glmapper.com/categories/api/"/>
+    <category term="api" scheme="http://sunknightzy.github.io/categories/api/"/>
     
     
-    <category term="api" scheme="http://www.glmapper.com/tags/api/"/>
+    <category term="api" scheme="http://sunknightzy.github.io/tags/api/"/>
     
-    <category term="yapi" scheme="http://www.glmapper.com/tags/yapi/"/>
+    <category term="yapi" scheme="http://sunknightzy.github.io/tags/yapi/"/>
     
   </entry>
   
   <entry>
     <title>Spring Cloud Config Nacos 配置热更新分析</title>
-    <link href="http://www.glmapper.com/2022/04/17/config/spring-cloud-config-nacos/"/>
-    <id>http://www.glmapper.com/2022/04/17/config/spring-cloud-config-nacos/</id>
+    <link href="http://sunknightzy.github.io/2022/04/17/config/spring-cloud-config-nacos/"/>
+    <id>http://sunknightzy.github.io/2022/04/17/config/spring-cloud-config-nacos/</id>
     <published>2022-04-17T14:05:36.000Z</published>
     <updated>2022-04-24T09:32:05.810Z</updated>
     
@@ -187,21 +187,21 @@
     
     
     
-    <category term="Nacos" scheme="http://www.glmapper.com/categories/Nacos/"/>
+    <category term="Nacos" scheme="http://sunknightzy.github.io/categories/Nacos/"/>
     
     
-    <category term="spring" scheme="http://www.glmapper.com/tags/spring/"/>
+    <category term="spring" scheme="http://sunknightzy.github.io/tags/spring/"/>
     
-    <category term="spring cloud" scheme="http://www.glmapper.com/tags/spring-cloud/"/>
+    <category term="spring cloud" scheme="http://sunknightzy.github.io/tags/spring-cloud/"/>
     
-    <category term="nacos" scheme="http://www.glmapper.com/tags/nacos/"/>
+    <category term="nacos" scheme="http://sunknightzy.github.io/tags/nacos/"/>
     
   </entry>
   
   <entry>
     <title>Spring Cloud Alibaba Nacos Config 是如何读取配置的？</title>
-    <link href="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"/>
-    <id>http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/</id>
+    <link href="http://sunknightzy.github.io/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"/>
+    <id>http://sunknightzy.github.io/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/</id>
     <published>2022-03-13T03:45:39.000Z</published>
     <updated>2022-04-24T03:46:42.973Z</updated>
     
@@ -210,19 +210,19 @@
     
     
     
-    <category term="SpringCloud" scheme="http://www.glmapper.com/categories/SpringCloud/"/>
+    <category term="SpringCloud" scheme="http://sunknightzy.github.io/categories/SpringCloud/"/>
     
     
-    <category term="nacos" scheme="http://www.glmapper.com/tags/nacos/"/>
+    <category term="nacos" scheme="http://sunknightzy.github.io/tags/nacos/"/>
     
-    <category term="config" scheme="http://www.glmapper.com/tags/config/"/>
+    <category term="config" scheme="http://sunknightzy.github.io/tags/config/"/>
     
   </entry>
   
   <entry>
     <title>1 分钟快速上手 Spring Cache</title>
-    <link href="http://www.glmapper.com/2022/02/21/spring/spring-cache-quick-start/"/>
-    <id>http://www.glmapper.com/2022/02/21/spring/spring-cache-quick-start/</id>
+    <link href="http://sunknightzy.github.io/2022/02/21/spring/spring-cache-quick-start/"/>
+    <id>http://sunknightzy.github.io/2022/02/21/spring/spring-cache-quick-start/</id>
     <published>2022-02-21T03:43:24.000Z</published>
     <updated>2022-04-24T03:44:46.723Z</updated>
     
@@ -231,19 +231,19 @@
     
     
     
-    <category term="spring" scheme="http://www.glmapper.com/categories/spring/"/>
+    <category term="spring" scheme="http://sunknightzy.github.io/categories/spring/"/>
     
     
-    <category term="spring" scheme="http://www.glmapper.com/tags/spring/"/>
+    <category term="spring" scheme="http://sunknightzy.github.io/tags/spring/"/>
     
-    <category term="cache" scheme="http://www.glmapper.com/tags/cache/"/>
+    <category term="cache" scheme="http://sunknightzy.github.io/tags/cache/"/>
     
   </entry>
   
   <entry>
     <title>2021 年终总结-磊叔的 Work Life Balance</title>
-    <link href="http://www.glmapper.com/2021/12/27/share/shares-2021/"/>
-    <id>http://www.glmapper.com/2021/12/27/share/shares-2021/</id>
+    <link href="http://sunknightzy.github.io/2021/12/27/share/shares-2021/"/>
+    <id>http://sunknightzy.github.io/2021/12/27/share/shares-2021/</id>
     <published>2021-12-27T03:40:31.000Z</published>
     <updated>2022-04-24T03:42:42.796Z</updated>
     
@@ -255,21 +255,21 @@
     
     
     
-    <category term="experience" scheme="http://www.glmapper.com/categories/experience/"/>
+    <category term="experience" scheme="http://sunknightzy.github.io/categories/experience/"/>
     
     
-    <category term="SOFA" scheme="http://www.glmapper.com/tags/SOFA/"/>
+    <category term="SOFA" scheme="http://sunknightzy.github.io/tags/SOFA/"/>
     
-    <category term="杭州" scheme="http://www.glmapper.com/tags/%E6%9D%AD%E5%B7%9E/"/>
+    <category term="杭州" scheme="http://sunknightzy.github.io/tags/%E6%9D%AD%E5%B7%9E/"/>
     
-    <category term="合肥" scheme="http://www.glmapper.com/tags/%E5%90%88%E8%82%A5/"/>
+    <category term="合肥" scheme="http://sunknightzy.github.io/tags/%E5%90%88%E8%82%A5/"/>
     
   </entry>
   
   <entry>
     <title>SpringBoot Actuator 潜在的 OOM 问题</title>
-    <link href="http://www.glmapper.com/2021/11/29/springboot/springboot-series-actuator-oom/"/>
-    <id>http://www.glmapper.com/2021/11/29/springboot/springboot-series-actuator-oom/</id>
+    <link href="http://sunknightzy.github.io/2021/11/29/springboot/springboot-series-actuator-oom/"/>
+    <id>http://sunknightzy.github.io/2021/11/29/springboot/springboot-series-actuator-oom/</id>
     <published>2021-11-29T03:37:27.000Z</published>
     <updated>2022-04-24T03:39:18.474Z</updated>
     
@@ -278,21 +278,21 @@
     
     
     
-    <category term="SpringBoot" scheme="http://www.glmapper.com/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://sunknightzy.github.io/categories/SpringBoot/"/>
     
     
-    <category term="OOM" scheme="http://www.glmapper.com/tags/OOM/"/>
+    <category term="OOM" scheme="http://sunknightzy.github.io/tags/OOM/"/>
     
-    <category term="SpringBoot" scheme="http://www.glmapper.com/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://sunknightzy.github.io/tags/SpringBoot/"/>
     
-    <category term="actuator" scheme="http://www.glmapper.com/tags/actuator/"/>
+    <category term="actuator" scheme="http://sunknightzy.github.io/tags/actuator/"/>
     
   </entry>
   
   <entry>
     <title>为什么你的 SpringBoot 自动配置失效了</title>
-    <link href="http://www.glmapper.com/2021/11/15/springboot/springboot-series-autoconfigure-invalid/"/>
-    <id>http://www.glmapper.com/2021/11/15/springboot/springboot-series-autoconfigure-invalid/</id>
+    <link href="http://sunknightzy.github.io/2021/11/15/springboot/springboot-series-autoconfigure-invalid/"/>
+    <id>http://sunknightzy.github.io/2021/11/15/springboot/springboot-series-autoconfigure-invalid/</id>
     <published>2021-11-15T03:35:18.000Z</published>
     <updated>2022-04-24T03:36:16.938Z</updated>
     
@@ -301,19 +301,19 @@
     
     
     
-    <category term="SpringBoot" scheme="http://www.glmapper.com/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://sunknightzy.github.io/categories/SpringBoot/"/>
     
     
-    <category term="SpringBoot" scheme="http://www.glmapper.com/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://sunknightzy.github.io/tags/SpringBoot/"/>
     
-    <category term="自动配置" scheme="http://www.glmapper.com/tags/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/"/>
+    <category term="自动配置" scheme="http://sunknightzy.github.io/tags/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/"/>
     
   </entry>
   
   <entry>
     <title>git 中 merge 和 rebase 小记</title>
-    <link href="http://www.glmapper.com/2021/11/09/git/git-cmd-rebase-merge/"/>
-    <id>http://www.glmapper.com/2021/11/09/git/git-cmd-rebase-merge/</id>
+    <link href="http://sunknightzy.github.io/2021/11/09/git/git-cmd-rebase-merge/"/>
+    <id>http://sunknightzy.github.io/2021/11/09/git/git-cmd-rebase-merge/</id>
     <published>2021-11-09T03:32:40.000Z</published>
     <updated>2022-04-24T03:33:46.751Z</updated>
     
@@ -322,21 +322,21 @@
     
     
     
-    <category term="git" scheme="http://www.glmapper.com/categories/git/"/>
+    <category term="git" scheme="http://sunknightzy.github.io/categories/git/"/>
     
     
-    <category term="git" scheme="http://www.glmapper.com/tags/git/"/>
+    <category term="git" scheme="http://sunknightzy.github.io/tags/git/"/>
     
-    <category term="merge" scheme="http://www.glmapper.com/tags/merge/"/>
+    <category term="merge" scheme="http://sunknightzy.github.io/tags/merge/"/>
     
-    <category term="rebase" scheme="http://www.glmapper.com/tags/rebase/"/>
+    <category term="rebase" scheme="http://sunknightzy.github.io/tags/rebase/"/>
     
   </entry>
   
   <entry>
     <title>mysql 日志文件</title>
-    <link href="http://www.glmapper.com/2021/11/08/middleware/middleware-mysql-log-file/"/>
-    <id>http://www.glmapper.com/2021/11/08/middleware/middleware-mysql-log-file/</id>
+    <link href="http://sunknightzy.github.io/2021/11/08/middleware/middleware-mysql-log-file/"/>
+    <id>http://sunknightzy.github.io/2021/11/08/middleware/middleware-mysql-log-file/</id>
     <published>2021-11-08T03:30:18.000Z</published>
     <updated>2022-04-24T03:31:27.318Z</updated>
     
@@ -352,19 +352,19 @@
     
     
     
-    <category term="Middleware" scheme="http://www.glmapper.com/categories/Middleware/"/>
+    <category term="Middleware" scheme="http://sunknightzy.github.io/categories/Middleware/"/>
     
     
-    <category term="mysql" scheme="http://www.glmapper.com/tags/mysql/"/>
+    <category term="mysql" scheme="http://sunknightzy.github.io/tags/mysql/"/>
     
-    <category term="log" scheme="http://www.glmapper.com/tags/log/"/>
+    <category term="log" scheme="http://sunknightzy.github.io/tags/log/"/>
     
   </entry>
   
   <entry>
     <title>聊一聊 Mockito</title>
-    <link href="http://www.glmapper.com/2021/11/06/tests/test-mock-mockito/"/>
-    <id>http://www.glmapper.com/2021/11/06/tests/test-mock-mockito/</id>
+    <link href="http://sunknightzy.github.io/2021/11/06/tests/test-mock-mockito/"/>
+    <id>http://sunknightzy.github.io/2021/11/06/tests/test-mock-mockito/</id>
     <published>2021-11-06T03:26:33.000Z</published>
     <updated>2022-04-24T03:29:36.816Z</updated>
     
@@ -373,21 +373,21 @@
     
     
     
-    <category term="test" scheme="http://www.glmapper.com/categories/test/"/>
+    <category term="test" scheme="http://sunknightzy.github.io/categories/test/"/>
     
     
-    <category term="test" scheme="http://www.glmapper.com/tags/test/"/>
+    <category term="test" scheme="http://sunknightzy.github.io/tags/test/"/>
     
-    <category term="mock" scheme="http://www.glmapper.com/tags/mock/"/>
+    <category term="mock" scheme="http://sunknightzy.github.io/tags/mock/"/>
     
-    <category term="Mockito" scheme="http://www.glmapper.com/tags/Mockito/"/>
+    <category term="Mockito" scheme="http://sunknightzy.github.io/tags/Mockito/"/>
     
   </entry>
   
   <entry>
     <title>JVM-Java 对象模型</title>
-    <link href="http://www.glmapper.com/2021/11/05/jvm/jvm-openjdk-oop-klass/"/>
-    <id>http://www.glmapper.com/2021/11/05/jvm/jvm-openjdk-oop-klass/</id>
+    <link href="http://sunknightzy.github.io/2021/11/05/jvm/jvm-openjdk-oop-klass/"/>
+    <id>http://sunknightzy.github.io/2021/11/05/jvm/jvm-openjdk-oop-klass/</id>
     <published>2021-11-05T03:23:39.000Z</published>
     <updated>2022-04-24T03:25:44.859Z</updated>
     
@@ -396,19 +396,19 @@
     
     
     
-    <category term="jvm" scheme="http://www.glmapper.com/categories/jvm/"/>
+    <category term="jvm" scheme="http://sunknightzy.github.io/categories/jvm/"/>
     
     
-    <category term="jvm" scheme="http://www.glmapper.com/tags/jvm/"/>
+    <category term="jvm" scheme="http://sunknightzy.github.io/tags/jvm/"/>
     
-    <category term="oop-klass" scheme="http://www.glmapper.com/tags/oop-klass/"/>
+    <category term="oop-klass" scheme="http://sunknightzy.github.io/tags/oop-klass/"/>
     
   </entry>
   
   <entry>
     <title>finalize 方法重写对 GC 的影响分析</title>
-    <link href="http://www.glmapper.com/2021/11/02/java/java-advance-gc-finalize/"/>
-    <id>http://www.glmapper.com/2021/11/02/java/java-advance-gc-finalize/</id>
+    <link href="http://sunknightzy.github.io/2021/11/02/java/java-advance-gc-finalize/"/>
+    <id>http://sunknightzy.github.io/2021/11/02/java/java-advance-gc-finalize/</id>
     <published>2021-11-02T03:17:56.000Z</published>
     <updated>2022-04-24T03:21:21.447Z</updated>
     
@@ -417,21 +417,21 @@
     
     
     
-    <category term="SOFA" scheme="http://www.glmapper.com/categories/SOFA/"/>
+    <category term="SOFA" scheme="http://sunknightzy.github.io/categories/SOFA/"/>
     
     
-    <category term="SOFAArk" scheme="http://www.glmapper.com/tags/SOFAArk/"/>
+    <category term="SOFAArk" scheme="http://sunknightzy.github.io/tags/SOFAArk/"/>
     
-    <category term="ClassLoader" scheme="http://www.glmapper.com/tags/ClassLoader/"/>
+    <category term="ClassLoader" scheme="http://sunknightzy.github.io/tags/ClassLoader/"/>
     
-    <category term="gc" scheme="http://www.glmapper.com/tags/gc/"/>
+    <category term="gc" scheme="http://sunknightzy.github.io/tags/gc/"/>
     
   </entry>
   
   <entry>
     <title>log4j2 日志 PatternLayout 配置对 SOFAArk PluginClassLoader 的影响</title>
-    <link href="http://www.glmapper.com/2021/11/01/sofa/sofa-ark-plugin-classloader-log4j/"/>
-    <id>http://www.glmapper.com/2021/11/01/sofa/sofa-ark-plugin-classloader-log4j/</id>
+    <link href="http://sunknightzy.github.io/2021/11/01/sofa/sofa-ark-plugin-classloader-log4j/"/>
+    <id>http://sunknightzy.github.io/2021/11/01/sofa/sofa-ark-plugin-classloader-log4j/</id>
     <published>2021-11-01T03:10:19.000Z</published>
     <updated>2022-04-24T03:25:15.660Z</updated>
     
@@ -440,25 +440,25 @@
     
     
     
-    <category term="SOFA" scheme="http://www.glmapper.com/categories/SOFA/"/>
+    <category term="SOFA" scheme="http://sunknightzy.github.io/categories/SOFA/"/>
     
     
-    <category term="SOFAArk" scheme="http://www.glmapper.com/tags/SOFAArk/"/>
+    <category term="SOFAArk" scheme="http://sunknightzy.github.io/tags/SOFAArk/"/>
     
-    <category term="ClassLoader" scheme="http://www.glmapper.com/tags/ClassLoader/"/>
+    <category term="ClassLoader" scheme="http://sunknightzy.github.io/tags/ClassLoader/"/>
     
-    <category term="类加载" scheme="http://www.glmapper.com/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/"/>
+    <category term="类加载" scheme="http://sunknightzy.github.io/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/"/>
     
-    <category term="log" scheme="http://www.glmapper.com/tags/log/"/>
+    <category term="log" scheme="http://sunknightzy.github.io/tags/log/"/>
     
-    <category term="gc" scheme="http://www.glmapper.com/tags/gc/"/>
+    <category term="gc" scheme="http://sunknightzy.github.io/tags/gc/"/>
     
   </entry>
   
   <entry>
     <title>记：SOFA Meepup 合肥站-SOFA 微服务体系技术生态于实践</title>
-    <link href="http://www.glmapper.com/2021/07/25/share/shares-sofa-meetup-7/"/>
-    <id>http://www.glmapper.com/2021/07/25/share/shares-sofa-meetup-7/</id>
+    <link href="http://sunknightzy.github.io/2021/07/25/share/shares-sofa-meetup-7/"/>
+    <id>http://sunknightzy.github.io/2021/07/25/share/shares-sofa-meetup-7/</id>
     <published>2021-07-25T08:06:55.000Z</published>
     <updated>2022-04-23T07:07:47.288Z</updated>
     
@@ -468,10 +468,10 @@
     
     
     
-    <category term="experience" scheme="http://www.glmapper.com/categories/experience/"/>
+    <category term="experience" scheme="http://sunknightzy.github.io/categories/experience/"/>
     
     
-    <category term="SOFA" scheme="http://www.glmapper.com/tags/SOFA/"/>
+    <category term="SOFA" scheme="http://sunknightzy.github.io/tags/SOFA/"/>
     
   </entry>
   

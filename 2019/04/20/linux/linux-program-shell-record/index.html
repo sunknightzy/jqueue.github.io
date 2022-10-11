@@ -22,7 +22,7 @@
     <meta property="og:title" content="linux shell 编程小记" />
     <meta
       property="og:url"
-      content="http://www.glmapper.com/2019/04/20/linux/linux-program-shell-record/"
+      content="http://sunknightzy.github.io/2019/04/20/linux/linux-program-shell-record/"
     />
     <meta property="og:site_name" content="J.Queue的技术博客" />
     <meta
@@ -32,7 +32,7 @@
     <meta property="og:locale" content="zh_CN" />
     <meta
       property="og:image"
-      content="http://www.glmapper.com/img/og_image.png"
+      content="http://sunknightzy.github.io/img/og_image.png"
     />
     <meta
       property="article:published_time"
@@ -50,10 +50,10 @@
         "@type": "BlogPosting",
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": "http://www.glmapper.com/2019/04/20/linux/linux-program-shell-record/"
+          "@id": "http://sunknightzy.github.io/2019/04/20/linux/linux-program-shell-record/"
         },
         "headline": "linux shell 编程小记",
-        "image": ["http://www.glmapper.com/img/og_image.png"],
+        "image": ["http://sunknightzy.github.io/img/og_image.png"],
         "datePublished": "2019-04-20T10:18:42.000Z",
         "dateModified": "2022-04-23T11:38:47.529Z",
         "author": { "@type": "Person", "name": "J.Queue" },
@@ -70,7 +70,7 @@
     </script>
     <link
       rel="canonical"
-      href="http://www.glmapper.com/2019/04/20/linux/linux-program-shell-record/"
+      href="http://sunknightzy.github.io/2019/04/20/linux/linux-program-shell-record/"
     />
     <link rel="icon" href="/img/favicon.ico" />
     <link
@@ -442,7 +442,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># # 号是运算符，*/ 表示从左边开始删除第一个 / 号及左边的所有字符,即删除 http://</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var#*//&#125;</span></span><br><span class="line"><span class="comment">#结果 www.glmapper.com</span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># # 号是运算符，*/ 表示从左边开始删除第一个 / 号及左边的所有字符,即删除 http://</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var#*//&#125;</span></span><br><span class="line"><span class="comment">#结果 sunknightzy.github.io</span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -461,7 +461,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># ##*/ 表示从左边开始删除最后（最右边）一个 / 号及左边的所有字符</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var##*//&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 结果 www.glmapper.com</span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># ##*/ 表示从左边开始删除最后（最右边）一个 / 号及左边的所有字符</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var##*//&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 结果 sunknightzy.github.io</span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -483,7 +483,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># %/* 表示从右边开始，删除第一个 / 号及右边的字符</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var%/*&#125;</span></span><br><span class="line"><span class="comment"># 结果是：http:/</span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># %/* 表示从右边开始，删除第一个 / 号及右边的字符</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var%/*&#125;</span></span><br><span class="line"><span class="comment"># 结果是：http:/</span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -505,7 +505,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># %%/* 表示从右边开始，删除最后（最左边）一个 / 号及右边的字符</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var%%/*&#125;</span></span><br><span class="line"><span class="comment"># 结果 ：http: </span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># %%/* 表示从右边开始，删除最后（最左边）一个 / 号及右边的字符</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var%%/*&#125;</span></span><br><span class="line"><span class="comment"># 结果 ：http: </span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -521,7 +521,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># 其中的 0 表示左边第一个字符开始，5 表示字符的总个数</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:0:5&#125;</span></span><br><span class="line"><span class="comment"># 结果 http:</span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># 其中的 0 表示左边第一个字符开始，5 表示字符的总个数</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:0:5&#125;</span></span><br><span class="line"><span class="comment"># 结果 http:</span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -537,7 +537,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># 其中的 7 表示左边第8个字符开始，一直到结束。</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:7&#125;</span></span><br><span class="line"><span class="comment"># 结果 www.glmapper.com</span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># 其中的 7 表示左边第8个字符开始，一直到结束。</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:7&#125;</span></span><br><span class="line"><span class="comment"># 结果 sunknightzy.github.io</span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -553,7 +553,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># 其中的 0-3 表示右边算起第3个字符开始，3 表示字符的个数</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:0-3:3&#125;</span></span><br><span class="line"><span class="comment"># 结果 com</span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># 其中的 0-3 表示右边算起第3个字符开始，3 表示字符的个数</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:0-3:3&#125;</span></span><br><span class="line"><span class="comment"># 结果 com</span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -569,7 +569,7 @@
                           <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
                         </td>
                         <td class="code">
-                          <pre><span class="line">var=http://www.glmapper.com</span><br><span class="line"><span class="comment"># 表示从右边第 3 个字符开始，一直到结束</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:0-3&#125;</span></span><br><span class="line"><span class="comment"># 结果 com</span></span><br></pre>
+                          <pre><span class="line">var=http://sunknightzy.github.io</span><br><span class="line"><span class="comment"># 表示从右边第 3 个字符开始，一直到结束</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;var:0-3&#125;</span></span><br><span class="line"><span class="comment"># 结果 com</span></span><br></pre>
                         </td>
                       </tr>
                     </table>
@@ -938,8 +938,8 @@
                     <p>linux shell 编程小记</p>
                     <p>
                       <a
-                        href="http://www.glmapper.com/2019/04/20/linux/linux-program-shell-record/"
-                        >http://www.glmapper.com/2019/04/20/linux/linux-program-shell-record/</a
+                        href="http://sunknightzy.github.io/2019/04/20/linux/linux-program-shell-record/"
+                        >http://sunknightzy.github.io/2019/04/20/linux/linux-program-shell-record/</a
                       >
                     </p>
                   </div>
@@ -1088,7 +1088,7 @@
                       <p class="is-size-6 is-block">Java Developer</p>
                       <p class="is-size-6 is-flex justify-content-center">
                         <i class="fas fa-map-marker-alt mr-1"></i
-                        ><span>HeFei AnHui</span>
+                        ><span>🇨🇳 China</span>
                       </p>
                     </div>
                   </div>
