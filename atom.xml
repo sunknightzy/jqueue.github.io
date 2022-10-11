@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>磊叔的技术博客</title>
+  <title>J.Queue的技术博客</title>
   
   <subtitle>拥抱开源，拥抱技术分享</subtitle>
   <link href="http://www.glmapper.com/atom.xml" rel="self"/>
@@ -10,7 +10,7 @@
   <id>http://www.glmapper.com/</id>
   
   <author>
-    <name>卫恒</name>
+    <name>J.Queue</name>
     
   </author>
   

@@ -1,142 +1,1918 @@
-<!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Spring Cloud Alibaba Nacos Config 是如何读取配置的？ - 磊叔的技术博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="磊叔的技术博客"><meta name="msapplication-TileImage" content="/img/favicon.ico"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="磊叔的技术博客"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的"><meta property="og:type" content="blog"><meta property="og:title" content="Spring Cloud Alibaba Nacos Config 是如何读取配置的？"><meta property="og:url" content="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"><meta property="og:site_name" content="磊叔的技术博客"><meta property="og:description" content="nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c89283e7ba2433286ce265fdccd40b7~tplv-k3u1fbpfcp-watermark.image"><meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec26b09129804549ae27e73cdfa15b2a~tplv-k3u1fbpfcp-watermark.image"><meta property="og:image" content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f421c44abf0746ed8d347b28afd6fc84~tplv-k3u1fbpfcp-watermark.image"><meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0c07bdb85e47402e9b0bef68e1f6751c~tplv-k3u1fbpfcp-watermark.image"><meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/090604155d7e4be59ef23542cb56f6a2~tplv-k3u1fbpfcp-watermark.image"><meta property="article:published_time" content="2022-03-13T03:45:39.000Z"><meta property="article:modified_time" content="2022-04-24T03:46:42.973Z"><meta property="article:author" content="卫恒"><meta property="article:tag" content="nacos"><meta property="article:tag" content="config"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c89283e7ba2433286ce265fdccd40b7~tplv-k3u1fbpfcp-watermark.image"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"},"headline":"Spring Cloud Alibaba Nacos Config 是如何读取配置的？","image":[],"datePublished":"2022-03-13T03:45:39.000Z","dateModified":"2022-04-24T03:46:42.973Z","author":{"@type":"Person","name":"卫恒"},"publisher":{"@type":"Organization","name":"磊叔的技术博客","logo":{"@type":"ImageObject","url":{"text":"磊叔的技术博客"}}},"description":"nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的"}</script><link rel="canonical" href="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"><link rel="icon" href="/img/favicon.ico"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/github.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
-  (function () {
-      function switchTab() {
-          if (!location.hash) {
-            return;
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta />
+    <title>
+      Spring Cloud Alibaba Nacos Config 是如何读取配置的？ - J.Queue的技术博客
+    </title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="application-name" content="J.Queue的技术博客" />
+    <meta name="msapplication-TileImage" content="/img/favicon.ico" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="J.Queue的技术博客" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta
+      name="description"
+      content="nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的"
+    />
+    <meta property="og:type" content="blog" />
+    <meta
+      property="og:title"
+      content="Spring Cloud Alibaba Nacos Config 是如何读取配置的？"
+    />
+    <meta
+      property="og:url"
+      content="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"
+    />
+    <meta property="og:site_name" content="J.Queue的技术博客" />
+    <meta
+      property="og:description"
+      content="nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的"
+    />
+    <meta property="og:locale" content="zh_CN" />
+    <meta
+      property="og:image"
+      content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c89283e7ba2433286ce265fdccd40b7~tplv-k3u1fbpfcp-watermark.image"
+    />
+    <meta
+      property="og:image"
+      content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec26b09129804549ae27e73cdfa15b2a~tplv-k3u1fbpfcp-watermark.image"
+    />
+    <meta
+      property="og:image"
+      content="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f421c44abf0746ed8d347b28afd6fc84~tplv-k3u1fbpfcp-watermark.image"
+    />
+    <meta
+      property="og:image"
+      content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0c07bdb85e47402e9b0bef68e1f6751c~tplv-k3u1fbpfcp-watermark.image"
+    />
+    <meta
+      property="og:image"
+      content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/090604155d7e4be59ef23542cb56f6a2~tplv-k3u1fbpfcp-watermark.image"
+    />
+    <meta
+      property="article:published_time"
+      content="2022-03-13T03:45:39.000Z"
+    />
+    <meta property="article:modified_time" content="2022-04-24T03:46:42.973Z" />
+    <meta property="article:author" content="J.Queue" />
+    <meta property="article:tag" content="nacos" />
+    <meta property="article:tag" content="config" />
+    <meta property="twitter:card" content="summary" />
+    <meta
+      property="twitter:image"
+      content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c89283e7ba2433286ce265fdccd40b7~tplv-k3u1fbpfcp-watermark.image"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"
+        },
+        "headline": "Spring Cloud Alibaba Nacos Config 是如何读取配置的？",
+        "image": [],
+        "datePublished": "2022-03-13T03:45:39.000Z",
+        "dateModified": "2022-04-24T03:46:42.973Z",
+        "author": { "@type": "Person", "name": "J.Queue" },
+        "publisher": {
+          "@type": "Organization",
+          "name": "J.Queue的技术博客",
+          "logo": {
+            "@type": "ImageObject",
+            "url": { "text": "J.Queue的技术博客" }
           }
-          Array
-              .from(document.querySelectorAll('.tab-content'))
-              .forEach($tab => {
-                  $tab.classList.add('is-hidden');
-              });
-          Array
-              .from(document.querySelectorAll('.tabs li'))
-              .forEach($tab => {
-                  $tab.classList.remove('is-active');
-              });
-          const $activeTab = document.querySelector(location.hash);
-          if ($activeTab) {
-              $activeTab.classList.remove('is-hidden');
-          }
-          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
-          if ($tabMenu) {
-              $tabMenu.parentElement.classList.add('is-active');
-          }
+        },
+        "description": "nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的"
       }
-      switchTab();
-      window.addEventListener('hashchange', switchTab, false);
-  })();
-  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="磊叔的技术博客" type="application/atom+xml">
-</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">磊叔的技术博客</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/glmapper"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-10-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-03-13T03:45:39.000Z" title="2022/3/13 上午11:45:39">2022-03-13</time>发表</span><span class="level-item"><time dateTime="2022-04-24T03:46:42.973Z" title="2022/4/24 上午11:46:42">2022-04-24</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/SpringCloud/">SpringCloud</a></span><span class="level-item">10 分钟读完 (大约1535个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">Spring Cloud Alibaba Nacos Config 是如何读取配置的？</h1><div class="content"><p>nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的。</p>
-<span id="more"></span>
+    </script>
+    <link
+      rel="canonical"
+      href="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"
+    />
+    <link rel="icon" href="/img/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/github.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"
+    />
+    <link rel="stylesheet" href="/css/default.css" />
+    <style>
+      body > .footer,
+      body > .navbar,
+      body > .section {
+        opacity: 0;
+      }
+    </style>
+    <!--!-->
+    <!--!-->
+    <!--!-->
+    <script
+      src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+      defer
+    ></script>
+    <!--!-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"
+    />
+    <!--!-->
+    <!--!-->
+    <style>
+      .pace {
+        -webkit-pointer-events: none;
+        pointer-events: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+      .pace-inactive {
+        display: none;
+      }
+      .pace .pace-progress {
+        background: #3273dc;
+        position: fixed;
+        z-index: 2000;
+        top: 0;
+        right: 100%;
+        width: 100%;
+        height: 2px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script>
+    <!--!-->
+    <!--!-->
+    <!-- hexo injector head_end start -->
+    <script>
+      ;(function () {
+        function switchTab() {
+          if (!location.hash) {
+            return
+          }
+          Array.from(document.querySelectorAll('.tab-content')).forEach(
+            ($tab) => {
+              $tab.classList.add('is-hidden')
+            }
+          )
+          Array.from(document.querySelectorAll('.tabs li')).forEach(($tab) => {
+            $tab.classList.remove('is-active')
+          })
+          const $activeTab = document.querySelector(location.hash)
+          if ($activeTab) {
+            $activeTab.classList.remove('is-hidden')
+          }
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`)
+          if ($tabMenu) {
+            $tabMenu.parentElement.classList.add('is-active')
+          }
+        }
+        switchTab()
+        window.addEventListener('hashchange', switchTab, false)
+      })()
+    </script>
+    <!-- hexo injector head_end end -->
+    <meta name="generator" content="Hexo 6.1.0" />
+    <link
+      rel="alternate"
+      href="/atom.xml"
+      title="J.Queue的技术博客"
+      type="application/atom+xml"
+    />
+  </head>
+  <body class="is-3-column">
+    <nav class="navbar navbar-main">
+      <div class="container navbar-container">
+        <div class="navbar-brand justify-content-center">
+          <a class="navbar-item navbar-logo" href="/">J.Queue的技术博客</a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="/">首页</a
+            ><a class="navbar-item" href="/archives">归档</a
+            ><a class="navbar-item" href="/categories">分类</a
+            ><a class="navbar-item" href="/tags">Tags</a
+            ><a class="navbar-item" href="/about">关于</a>
+          </div>
+          <div class="navbar-end">
+            <a
+              class="navbar-item"
+              target="_blank"
+              rel="noopener"
+              title="Download on GitHub"
+              href="https://github.com/glmapper"
+              ><i class="fab fa-github"></i></a
+            ><a
+              class="navbar-item is-hidden-tablet catalogue"
+              title="目录"
+              href="javascript:;"
+              ><i class="fas fa-list-ul"></i></a
+            ><a class="navbar-item search" title="搜索" href="javascript:;"
+              ><i class="fas fa-search"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <div class="columns">
+          <div
+            class="column order-2 column-main is-8-tablet is-8-desktop is-10-widescreen"
+          >
+            <div class="card">
+              <article class="card-content article" role="article">
+                <div
+                  class="article-meta is-size-7 is-uppercase level is-mobile"
+                >
+                  <div class="level-left">
+                    <span class="level-item"
+                      ><time
+                        datetime="2022-03-13T03:45:39.000Z"
+                        title="2022/3/13 上午11:45:39"
+                        >2022-03-13</time
+                      >发表</span
+                    ><span class="level-item"
+                      ><time
+                        datetime="2022-04-24T03:46:42.973Z"
+                        title="2022/4/24 上午11:46:42"
+                        >2022-04-24</time
+                      >更新</span
+                    ><span class="level-item"
+                      ><a class="link-muted" href="/categories/SpringCloud/"
+                        >SpringCloud</a
+                      ></span
+                    ><span class="level-item">10 分钟读完 (大约1535个字)</span
+                    ><span class="level-item" id="busuanzi_container_page_pv"
+                      ><span id="busuanzi_value_page_pv">0</span>次访问</span
+                    >
+                  </div>
+                </div>
+                <h1 class="title is-3 is-size-4-mobile">
+                  Spring Cloud Alibaba Nacos Config 是如何读取配置的？
+                </h1>
+                <div class="content">
+                  <p>
+                    nacos 配置最高级别的隔离是 namespace，其后是
+                    group；如果有配置隔离的诉求，建议优先使用 namespace
+                    进行隔离。因为对于 sharedConfigs 和 extensionConfigs
+                    来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了
+                    sharedConfigs 和 extensionConfigs ，期望通过指定 group
+                    进行隔离是做不到的。
+                  </p>
+                  <span id="more"></span>
 
-<p>本文主要分析 Spring Cloud Alibaba Nacos 配置客户端读取配置的部分过程，逻辑入口是 <code>com.alibaba.cloud.nacos.client.NacosPropertySourceLocator#locate</code>；通过本篇，</p>
-<ul>
-<li>1、了解到 sharedConfigs、extensionConfigs 如何加载</li>
-<li>2、应用配置加载时，dataId 的计算逻辑</li>
-<li>3、如何通过 group 和 namespace 来隔离配置</li>
-<li>4、如何禁用默认的 DEFAULT_GROUP</li>
-</ul>
-<h2 id="加载顺序和-sharedConfigs、extensionConfigs-加载逻辑"><a href="#加载顺序和-sharedConfigs、extensionConfigs-加载逻辑" class="headerlink" title="加载顺序和 sharedConfigs、extensionConfigs 加载逻辑"></a>加载顺序和 sharedConfigs、extensionConfigs 加载逻辑</h2><p>这里的配置主要指的是 sharedConfigs、extensionConfigs 以及用户通过 namespace+group+dataId 指定的应用配置。</p>
-<h3 id="加载顺序"><a href="#加载顺序" class="headerlink" title="加载顺序"></a>加载顺序</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 配置临时存档的地方</span></span><br><span class="line"><span class="type">CompositePropertySource</span> <span class="variable">composite</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CompositePropertySource</span>(</span><br><span class="line">      NACOS_PROPERTY_SOURCE_NAME);</span><br><span class="line"><span class="comment">// 1、先加载 sharedConfigs</span></span><br><span class="line">loadSharedConfiguration(composite);‘</span><br><span class="line"><span class="comment">// 2、接着加载 extensionConfigs</span></span><br><span class="line">loadExtConfiguration(composite);</span><br><span class="line"><span class="comment">// 最后加载指定的应用配置</span></span><br><span class="line">loadApplicationConfiguration(composite, dataIdPrefix, nacosConfigProperties, env);</span><br></pre></td></tr></table></figure>
+                  <p>
+                    本文主要分析 Spring Cloud Alibaba Nacos
+                    配置客户端读取配置的部分过程，逻辑入口是
+                    <code
+                      >com.alibaba.cloud.nacos.client.NacosPropertySourceLocator#locate</code
+                    >；通过本篇，
+                  </p>
+                  <ul>
+                    <li>1、了解到 sharedConfigs、extensionConfigs 如何加载</li>
+                    <li>2、应用配置加载时，dataId 的计算逻辑</li>
+                    <li>3、如何通过 group 和 namespace 来隔离配置</li>
+                    <li>4、如何禁用默认的 DEFAULT_GROUP</li>
+                  </ul>
+                  <h2 id="加载顺序和-sharedConfigs、extensionConfigs-加载逻辑">
+                    <a
+                      href="#加载顺序和-sharedConfigs、extensionConfigs-加载逻辑"
+                      class="headerlink"
+                      title="加载顺序和 sharedConfigs、extensionConfigs 加载逻辑"
+                    ></a
+                    >加载顺序和 sharedConfigs、extensionConfigs 加载逻辑
+                  </h2>
+                  <p>
+                    这里的配置主要指的是 sharedConfigs、extensionConfigs
+                    以及用户通过 namespace+group+dataId 指定的应用配置。
+                  </p>
+                  <h3 id="加载顺序">
+                    <a href="#加载顺序" class="headerlink" title="加载顺序"></a
+                    >加载顺序
+                  </h3>
+                  <figure class="highlight java">
+                    <table>
+                      <tr>
+                        <td class="gutter">
+                          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre>
+                        </td>
+                        <td class="code">
+                          <pre><span class="line"><span class="comment">// 配置临时存档的地方</span></span><br><span class="line"><span class="type">CompositePropertySource</span> <span class="variable">composite</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CompositePropertySource</span>(</span><br><span class="line">      NACOS_PROPERTY_SOURCE_NAME);</span><br><span class="line"><span class="comment">// 1、先加载 sharedConfigs</span></span><br><span class="line">loadSharedConfiguration(composite);‘</span><br><span class="line"><span class="comment">// 2、接着加载 extensionConfigs</span></span><br><span class="line">loadExtConfiguration(composite);</span><br><span class="line"><span class="comment">// 最后加载指定的应用配置</span></span><br><span class="line">loadApplicationConfiguration(composite, dataIdPrefix, nacosConfigProperties, env);</span><br></pre>
+                        </td>
+                      </tr>
+                    </table>
+                  </figure>
 
-<p>这里除了需要关注顺序之后，还有一点非常重要，就是对于 sharedConfigs、extensionConfigs 两个指定的配置，他们不依赖用户指定的 group，而是使用默认的 DEFAULT_GROUP，下面来看。</p>
-<h3 id="sharedConfigs-加载逻辑"><a href="#sharedConfigs-加载逻辑" class="headerlink" title="sharedConfigs 加载逻辑"></a>sharedConfigs 加载逻辑</h3><p>先通过代码大概理解下逻辑</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">loadSharedConfiguration</span><span class="params">(</span></span><br><span class="line"><span class="params">      CompositePropertySource compositePropertySource)</span> &#123;</span><br><span class="line">   <span class="comment">// 通过配置获取 sharedConfigs 列表</span></span><br><span class="line">   List&lt;NacosConfigProperties.Config&gt; sharedConfigs = nacosConfigProperties</span><br><span class="line">         .getSharedConfigs();</span><br><span class="line">   <span class="comment">// 如果没有配置，则啥都不做</span></span><br><span class="line">   <span class="keyword">if</span> (!CollectionUtils.isEmpty(sharedConfigs)) &#123;</span><br><span class="line">      checkConfiguration(sharedConfigs, <span class="string">&quot;shared-configs&quot;</span>);</span><br><span class="line">      loadNacosConfiguration(compositePropertySource, sharedConfigs);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                  <p>
+                    这里除了需要关注顺序之后，还有一点非常重要，就是对于
+                    sharedConfigs、extensionConfigs
+                    两个指定的配置，他们不依赖用户指定的 group，而是使用默认的
+                    DEFAULT_GROUP，下面来看。
+                  </p>
+                  <h3 id="sharedConfigs-加载逻辑">
+                    <a
+                      href="#sharedConfigs-加载逻辑"
+                      class="headerlink"
+                      title="sharedConfigs 加载逻辑"
+                    ></a
+                    >sharedConfigs 加载逻辑
+                  </h3>
+                  <p>先通过代码大概理解下逻辑</p>
+                  <figure class="highlight java">
+                    <table>
+                      <tr>
+                        <td class="gutter">
+                          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre>
+                        </td>
+                        <td class="code">
+                          <pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">loadSharedConfiguration</span><span class="params">(</span></span><br><span class="line"><span class="params">      CompositePropertySource compositePropertySource)</span> &#123;</span><br><span class="line">   <span class="comment">// 通过配置获取 sharedConfigs 列表</span></span><br><span class="line">   List&lt;NacosConfigProperties.Config&gt; sharedConfigs = nacosConfigProperties</span><br><span class="line">         .getSharedConfigs();</span><br><span class="line">   <span class="comment">// 如果没有配置，则啥都不做</span></span><br><span class="line">   <span class="keyword">if</span> (!CollectionUtils.isEmpty(sharedConfigs)) &#123;</span><br><span class="line">      checkConfiguration(sharedConfigs, <span class="string">&quot;shared-configs&quot;</span>);</span><br><span class="line">      loadNacosConfiguration(compositePropertySource, sharedConfigs);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre>
+                        </td>
+                      </tr>
+                    </table>
+                  </figure>
 
-<p>假设我通过 sharedConfigs 指定的配置如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">spring.cloud.nacos.config.shared-configs=</span><br><span class="line">application.yaml,</span><br><span class="line">application.properties,</span><br><span class="line">application-staging.yaml,</span><br><span class="line">application-staging.properties,</span><br><span class="line">application-CN.properties,</span><br><span class="line">application-staging_CN2.properties</span><br></pre></td></tr></table></figure>
-<p>通过 debug 面板看到，对于指定的 sharedConfigs，全部都挂在 DEFALUT_GROUP 下。</p>
-<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c89283e7ba2433286ce265fdccd40b7~tplv-k3u1fbpfcp-watermark.image" alt="image-20220303212133294.png"></p>
-<blockquote>
-<p>不管是 sharedConfigs 还是 extensionConfigs，抑或是用户指定 group 的配置，nacos 在读取配置时，都是优先从本地开始读，如果本地没有，才从远端配置服务端去读取。</p>
-</blockquote>
-<blockquote>
-<p>spring.cloud.nacos.config.extension-config 配置加载和 sharedConfigs 基本一致，这里不展开介绍。</p>
-</blockquote>
-<h2 id="应用配置加载逻辑中的-dataId-计算"><a href="#应用配置加载逻辑中的-dataId-计算" class="headerlink" title="应用配置加载逻辑中的 dataId 计算"></a>应用配置加载逻辑中的 dataId 计算</h2><p>这里主要指的是加载用户指定的 group 情况下的应用配置加载，还是先通过代码看下基本逻辑：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">loadApplicationConfiguration</span><span class="params">(</span></span><br><span class="line"><span class="params">      CompositePropertySource compositePropertySource, String dataIdPrefix,</span></span><br><span class="line"><span class="params">      NacosConfigProperties properties, Environment environment)</span> &#123;</span><br><span class="line">   <span class="comment">// 先获取文件的后缀名，比如 yml ，properties </span></span><br><span class="line">   <span class="type">String</span> <span class="variable">fileExtension</span> <span class="operator">=</span> properties.getFileExtension();</span><br><span class="line">   <span class="comment">// 获取 group</span></span><br><span class="line">   <span class="type">String</span> <span class="variable">nacosGroup</span> <span class="operator">=</span> properties.getGroup();</span><br><span class="line">   <span class="comment">// load directly once by default</span></span><br><span class="line">   loadNacosDataIfPresent(compositePropertySource, dataIdPrefix, nacosGroup,</span><br><span class="line">         fileExtension, <span class="literal">true</span>);</span><br><span class="line">   <span class="comment">// load with suffix, which have a higher priority than the default</span></span><br><span class="line">   loadNacosDataIfPresent(compositePropertySource,</span><br><span class="line">         dataIdPrefix + DOT + fileExtension, nacosGroup, fileExtension, <span class="literal">true</span>);</span><br><span class="line">   <span class="comment">// Loaded with profile, which have a higher priority than the suffix</span></span><br><span class="line">   <span class="keyword">for</span> (String profile : environment.getActiveProfiles()) &#123;</span><br><span class="line">      <span class="type">String</span> <span class="variable">dataId</span> <span class="operator">=</span> dataIdPrefix + SEP1 + profile + DOT + fileExtension;</span><br><span class="line">      loadNacosDataIfPresent(compositePropertySource, dataId, nacosGroup,</span><br><span class="line">            fileExtension, <span class="literal">true</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                  <p>假设我通过 sharedConfigs 指定的配置如下：</p>
+                  <figure class="highlight plaintext">
+                    <table>
+                      <tr>
+                        <td class="gutter">
+                          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre>
+                        </td>
+                        <td class="code">
+                          <pre><span class="line">spring.cloud.nacos.config.shared-configs=</span><br><span class="line">application.yaml,</span><br><span class="line">application.properties,</span><br><span class="line">application-staging.yaml,</span><br><span class="line">application-staging.properties,</span><br><span class="line">application-CN.properties,</span><br><span class="line">application-staging_CN2.properties</span><br></pre>
+                        </td>
+                      </tr>
+                    </table>
+                  </figure>
+                  <p>
+                    通过 debug 面板看到，对于指定的 sharedConfigs，全部都挂在
+                    DEFALUT_GROUP 下。
+                  </p>
+                  <p>
+                    <img
+                      src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c89283e7ba2433286ce265fdccd40b7~tplv-k3u1fbpfcp-watermark.image"
+                      alt="image-20220303212133294.png"
+                    />
+                  </p>
+                  <blockquote>
+                    <p>
+                      不管是 sharedConfigs 还是 extensionConfigs，抑或是用户指定
+                      group 的配置，nacos
+                      在读取配置时，都是优先从本地开始读，如果本地没有，才从远端配置服务端去读取。
+                    </p>
+                  </blockquote>
+                  <blockquote>
+                    <p>
+                      spring.cloud.nacos.config.extension-config 配置加载和
+                      sharedConfigs 基本一致，这里不展开介绍。
+                    </p>
+                  </blockquote>
+                  <h2 id="应用配置加载逻辑中的-dataId-计算">
+                    <a
+                      href="#应用配置加载逻辑中的-dataId-计算"
+                      class="headerlink"
+                      title="应用配置加载逻辑中的 dataId 计算"
+                    ></a
+                    >应用配置加载逻辑中的 dataId 计算
+                  </h2>
+                  <p>
+                    这里主要指的是加载用户指定的 group
+                    情况下的应用配置加载，还是先通过代码看下基本逻辑：
+                  </p>
+                  <figure class="highlight java">
+                    <table>
+                      <tr>
+                        <td class="gutter">
+                          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre>
+                        </td>
+                        <td class="code">
+                          <pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">loadApplicationConfiguration</span><span class="params">(</span></span><br><span class="line"><span class="params">      CompositePropertySource compositePropertySource, String dataIdPrefix,</span></span><br><span class="line"><span class="params">      NacosConfigProperties properties, Environment environment)</span> &#123;</span><br><span class="line">   <span class="comment">// 先获取文件的后缀名，比如 yml ，properties </span></span><br><span class="line">   <span class="type">String</span> <span class="variable">fileExtension</span> <span class="operator">=</span> properties.getFileExtension();</span><br><span class="line">   <span class="comment">// 获取 group</span></span><br><span class="line">   <span class="type">String</span> <span class="variable">nacosGroup</span> <span class="operator">=</span> properties.getGroup();</span><br><span class="line">   <span class="comment">// load directly once by default</span></span><br><span class="line">   loadNacosDataIfPresent(compositePropertySource, dataIdPrefix, nacosGroup,</span><br><span class="line">         fileExtension, <span class="literal">true</span>);</span><br><span class="line">   <span class="comment">// load with suffix, which have a higher priority than the default</span></span><br><span class="line">   loadNacosDataIfPresent(compositePropertySource,</span><br><span class="line">         dataIdPrefix + DOT + fileExtension, nacosGroup, fileExtension, <span class="literal">true</span>);</span><br><span class="line">   <span class="comment">// Loaded with profile, which have a higher priority than the suffix</span></span><br><span class="line">   <span class="keyword">for</span> (String profile : environment.getActiveProfiles()) &#123;</span><br><span class="line">      <span class="type">String</span> <span class="variable">dataId</span> <span class="operator">=</span> dataIdPrefix + SEP1 + profile + DOT + fileExtension;</span><br><span class="line">      loadNacosDataIfPresent(compositePropertySource, dataId, nacosGroup,</span><br><span class="line">            fileExtension, <span class="literal">true</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre>
+                        </td>
+                      </tr>
+                    </table>
+                  </figure>
 
-<p>上面代码片段中，加载配置有三种，第一是直接加载，这里的 dataId 使用的是 dataIdPrefix；第二是通过指定后缀加载；最后是通过 指定的 profile 加载。假设 spring.application.name 为 login-service，fileExtension 是 yaml， profile 为 staging，test，下面看下 dataId 的计算。</p>
-<h3 id="直接加载"><a href="#直接加载" class="headerlink" title="直接加载"></a>直接加载</h3><p>第一部分是加载默认的，这里的默认指的是 dataId 为 dataIdPrefix，dataIdPrefix 可以通过 spring.cloud.nacos.config.prefix 配置，如果没有配置，则使用的是 spring.application.name；这里去加载时，会有从本地文件先加载的逻辑，以这种情况为例，Mac 下本地路径为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> /Users/xxx/nacos/config/xxx/data/config-data-tenant/&#123;namespace&#125;/&#123;group&#125;/&#123;dataId&#125;</span><br></pre></td></tr></table></figure>
+                  <p>
+                    上面代码片段中，加载配置有三种，第一是直接加载，这里的
+                    dataId 使用的是
+                    dataIdPrefix；第二是通过指定后缀加载；最后是通过 指定的
+                    profile 加载。假设 spring.application.name 为
+                    login-service，fileExtension 是 yaml， profile 为
+                    staging，test，下面看下 dataId 的计算。
+                  </p>
+                  <h3 id="直接加载">
+                    <a href="#直接加载" class="headerlink" title="直接加载"></a
+                    >直接加载
+                  </h3>
+                  <p>
+                    第一部分是加载默认的，这里的默认指的是 dataId 为
+                    dataIdPrefix，dataIdPrefix 可以通过
+                    spring.cloud.nacos.config.prefix
+                    配置，如果没有配置，则使用的是
+                    spring.application.name；这里去加载时，会有从本地文件先加载的逻辑，以这种情况为例，Mac
+                    下本地路径为：
+                  </p>
+                  <figure class="highlight plaintext">
+                    <table>
+                      <tr>
+                        <td class="gutter">
+                          <pre><span class="line">1</span><br></pre>
+                        </td>
+                        <td class="code">
+                          <pre><span class="line"> /Users/xxx/nacos/config/xxx/data/config-data-tenant/&#123;namespace&#125;/&#123;group&#125;/&#123;dataId&#125;</span><br></pre>
+                        </td>
+                      </tr>
+                    </table>
+                  </figure>
 
-<p>如果本地没有，那就根据 namespace, group 和 dataId 去 nacos 服务端去获取，在直接加载这部分。</p>
-<h3 id="使用指定的-suffix-加载"><a href="#使用指定的-suffix-加载" class="headerlink" title="使用指定的 suffix 加载"></a>使用指定的 suffix 加载</h3><p>ns 和 group 都没变，但是 dataId 变成了 <code>dataIdPrefix + DOT + fileExtension</code>，所以 dataId 就变成了 login-service.yaml，其他加载逻辑和第一部分保持一致。</p>
-<h3 id="使用指定的-profile"><a href="#使用指定的-profile" class="headerlink" title="使用指定的 profile"></a>使用指定的 profile</h3><p>从代码可以看到，如果指定了多个 profile，则会遍历所有 profile 然后拼接 dataId；这里 dataId 的计算逻辑是 <code>dataIdPrefix + SEP1 + profile + DOT + fileExtension</code>；比如 dataIdPrefix 是 login-service，profile 是 staging，fileExtension 是 yaml，那么得到的 dataId 就是 login-service-staging.yaml，然后在根据 ns、group 和这个计算出来的 dataId 去 nacos 服务端拉去配置，其他逻辑和前面加载配置逻辑一致。</p>
-<h2 id="配置加载过程"><a href="#配置加载过程" class="headerlink" title="配置加载过程"></a>配置加载过程</h2><p>1、优先使用本地配，代码逻辑在 </p>
-<p><code>com.alibaba.nacos.client.config.NacosConfigService#getConfigInner</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 优先使用本地配置</span></span><br><span class="line"><span class="type">String</span> <span class="variable">content</span> <span class="operator">=</span> LocalConfigInfoProcessor.getFailover(agent.getName(), dataId, group, tenant);</span><br></pre></td></tr></table></figure>
+                  <p>
+                    如果本地没有，那就根据 namespace, group 和 dataId 去 nacos
+                    服务端去获取，在直接加载这部分。
+                  </p>
+                  <h3 id="使用指定的-suffix-加载">
+                    <a
+                      href="#使用指定的-suffix-加载"
+                      class="headerlink"
+                      title="使用指定的 suffix 加载"
+                    ></a
+                    >使用指定的 suffix 加载
+                  </h3>
+                  <p>
+                    ns 和 group 都没变，但是 dataId 变成了
+                    <code>dataIdPrefix + DOT + fileExtension</code>，所以 dataId
+                    就变成了
+                    login-service.yaml，其他加载逻辑和第一部分保持一致。
+                  </p>
+                  <h3 id="使用指定的-profile">
+                    <a
+                      href="#使用指定的-profile"
+                      class="headerlink"
+                      title="使用指定的 profile"
+                    ></a
+                    >使用指定的 profile
+                  </h3>
+                  <p>
+                    从代码可以看到，如果指定了多个 profile，则会遍历所有 profile
+                    然后拼接 dataId；这里 dataId 的计算逻辑是
+                    <code
+                      >dataIdPrefix + SEP1 + profile + DOT + fileExtension</code
+                    >；比如 dataIdPrefix 是 login-service，profile 是
+                    staging，fileExtension 是 yaml，那么得到的 dataId 就是
+                    login-service-staging.yaml，然后在根据 ns、group
+                    和这个计算出来的 dataId 去 nacos
+                    服务端拉去配置，其他逻辑和前面加载配置逻辑一致。
+                  </p>
+                  <h2 id="配置加载过程">
+                    <a
+                      href="#配置加载过程"
+                      class="headerlink"
+                      title="配置加载过程"
+                    ></a
+                    >配置加载过程
+                  </h2>
+                  <p>1、优先使用本地配，代码逻辑在</p>
+                  <p>
+                    <code
+                      >com.alibaba.nacos.client.config.NacosConfigService#getConfigInner</code
+                    >
+                  </p>
+                  <figure class="highlight java">
+                    <table>
+                      <tr>
+                        <td class="gutter">
+                          <pre><span class="line">1</span><br><span class="line">2</span><br></pre>
+                        </td>
+                        <td class="code">
+                          <pre><span class="line"><span class="comment">// 优先使用本地配置</span></span><br><span class="line"><span class="type">String</span> <span class="variable">content</span> <span class="operator">=</span> LocalConfigInfoProcessor.getFailover(agent.getName(), dataId, group, tenant);</span><br></pre>
+                        </td>
+                      </tr>
+                    </table>
+                  </figure>
 
-<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec26b09129804549ae27e73cdfa15b2a~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
-<p>2、配置资源定位</p>
-<p>配置资源定位通过三个参数 namespace + group + dataId 来确定</p>
-<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f421c44abf0746ed8d347b28afd6fc84~tplv-k3u1fbpfcp-watermark.image" alt="image-20220303213229747.png"></p>
-<p>从远端拉去之后，会优先创建本地快照，便于下次加载时能够优先从本地加载到</p>
-<p>3、文件格式解析<br>上一步拿到的data，原始数据是字符串类型，然后会根据配置的后缀名，来匹配一个 loader 解析器，nacos 中提供了 4 种类型的解析器</p>
-<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0c07bdb85e47402e9b0bef68e1f6751c~tplv-k3u1fbpfcp-watermark.image" alt="image-20220303213733933.png"></p>
-<p>通过解析器将 string 类型的数据进行处理，然后放到 propertySource，这些 propertySource 会被放在 NACOS_PROPERTY_SOURCE_REPOSITORY 这个 ma p 结构中，ke y 为 <code>dataId,group</code></p>
-<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/090604155d7e4be59ef23542cb56f6a2~tplv-k3u1fbpfcp-watermark.image" alt="image-20220303214150471.png"></p>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>nacos 配置最高级别的隔离是 namespace，其后是 group；如果有配置隔离的诉求，建议优先使用 namespace 进行隔离。因为对于 sharedConfigs 和 extensionConfigs 来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了 sharedConfigs 和 extensionConfigs ，期望通过指定 group 进行隔离是做不到的。</p>
-</div><div class="article-licensing box"><div class="licensing-title"><p>Spring Cloud Alibaba Nacos Config 是如何读取配置的？</p><p><a href="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/">http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>卫恒</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-03-13</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2022-04-24</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/nacos/">nacos</a><a class="link-muted mr-2" rel="tag" href="/tags/config/">config</a></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/zfb.JPG" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/pay.JPG" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/04/17/config/spring-cloud-config-nacos/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Spring Cloud Config Nacos 配置热更新分析</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/02/21/spring/spring-cache-quick-start/"><span class="level-item">1 分钟快速上手 Spring Cache</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
-            id: "2a0b7a5e2060678481d741f210671ac5",
-            repo: "glmapper.github.io",
-            owner: "glmapper",
-            clientID: "d25147ddf77e70d7adfe",
-            clientSecret: "c10bbd1ba7a09c96e4106709107d4da85d60be78",
-            admin: ["glmapper"],
-            createIssueManually: false,
-            distractionFreeMode: true,
-            perPage: 20,
-            pagerDirection: "last",
-            
-            
-            enableHotKey: true,
-            language: "zh-CN",
+                  <p>
+                    <img
+                      src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ec26b09129804549ae27e73cdfa15b2a~tplv-k3u1fbpfcp-watermark.image"
+                      alt="image.png"
+                    />
+                  </p>
+                  <p>2、配置资源定位</p>
+                  <p>
+                    配置资源定位通过三个参数 namespace + group + dataId 来确定
+                  </p>
+                  <p>
+                    <img
+                      src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f421c44abf0746ed8d347b28afd6fc84~tplv-k3u1fbpfcp-watermark.image"
+                      alt="image-20220303213229747.png"
+                    />
+                  </p>
+                  <p>
+                    从远端拉去之后，会优先创建本地快照，便于下次加载时能够优先从本地加载到
+                  </p>
+                  <p>
+                    3、文件格式解析<br />上一步拿到的data，原始数据是字符串类型，然后会根据配置的后缀名，来匹配一个
+                    loader 解析器，nacos 中提供了 4 种类型的解析器
+                  </p>
+                  <p>
+                    <img
+                      src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0c07bdb85e47402e9b0bef68e1f6751c~tplv-k3u1fbpfcp-watermark.image"
+                      alt="image-20220303213733933.png"
+                    />
+                  </p>
+                  <p>
+                    通过解析器将 string 类型的数据进行处理，然后放到
+                    propertySource，这些 propertySource 会被放在
+                    NACOS_PROPERTY_SOURCE_REPOSITORY 这个 ma p 结构中，ke y 为
+                    <code>dataId,group</code>
+                  </p>
+                  <p>
+                    <img
+                      src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/090604155d7e4be59ef23542cb56f6a2~tplv-k3u1fbpfcp-watermark.image"
+                      alt="image-20220303214150471.png"
+                    />
+                  </p>
+                  <h2 id="小结">
+                    <a href="#小结" class="headerlink" title="小结"></a>小结
+                  </h2>
+                  <p>
+                    nacos 配置最高级别的隔离是 namespace，其后是
+                    group；如果有配置隔离的诉求，建议优先使用 namespace
+                    进行隔离。因为对于 sharedConfigs 和 extensionConfigs
+                    来说，他们使用的是默认的 DEFALUT_GROUP，所以如果你配置了
+                    sharedConfigs 和 extensionConfigs ，期望通过指定 group
+                    进行隔离是做不到的。
+                  </p>
+                </div>
+                <div class="article-licensing box">
+                  <div class="licensing-title">
+                    <p>Spring Cloud Alibaba Nacos Config 是如何读取配置的？</p>
+                    <p>
+                      <a
+                        href="http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/"
+                        >http://www.glmapper.com/2022/03/13/springcloud/spring-cloud-config-nacos-config-locator/</a
+                      >
+                    </p>
+                  </div>
+                  <div class="licensing-meta level is-mobile">
+                    <div class="level-left">
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>作者</h6>
+                          <p>J.Queue</p>
+                        </div>
+                      </div>
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>发布于</h6>
+                          <p>2022-03-13</p>
+                        </div>
+                      </div>
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>更新于</h6>
+                          <p>2022-04-24</p>
+                        </div>
+                      </div>
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>许可协议</h6>
+                          <p>
+                            <a
+                              class="icons"
+                              rel="noopener"
+                              target="_blank"
+                              title="Creative Commons"
+                              href="https://creativecommons.org/"
+                              ><i class="icon fab fa-creative-commons"></i
+                            ></a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="article-tags is-size-7 mb-4">
+                  <span class="mr-2">#</span
+                  ><a class="link-muted mr-2" rel="tag" href="/tags/nacos/"
+                    >nacos</a
+                  ><a class="link-muted mr-2" rel="tag" href="/tags/config/"
+                    >config</a
+                  >
+                </div>
+                <!--!-->
+              </article>
+            </div>
+            <div class="card">
+              <div class="card-content">
+                <h3 class="menu-label has-text-centered">
+                  喜欢这篇文章？打赏一下作者吧
+                </h3>
+                <div class="buttons is-centered">
+                  <a class="button donate" data-type="alipay"
+                    ><span class="icon is-small"
+                      ><i class="fab fa-alipay"></i></span
+                    ><span>支付宝</span
+                    ><span class="qrcode"
+                      ><img src="/img/zfb.JPG" alt="支付宝" /></span></a
+                  ><a class="button donate" data-type="wechat"
+                    ><span class="icon is-small"
+                      ><i class="fab fa-weixin"></i></span
+                    ><span>微信</span
+                    ><span class="qrcode"
+                      ><img src="/img/pay.JPG" alt="微信" /></span
+                  ></a>
+                </div>
+              </div>
+            </div>
+            <nav class="post-navigation mt-4 level is-mobile">
+              <div class="level-start">
+                <a
+                  class="article-nav-prev level level-item link-muted"
+                  href="/2022/04/17/config/spring-cloud-config-nacos/"
+                  ><i class="level-item fas fa-chevron-left"></i
+                  ><span class="level-item"
+                    >Spring Cloud Config Nacos 配置热更新分析</span
+                  ></a
+                >
+              </div>
+              <div class="level-end">
+                <a
+                  class="article-nav-next level level-item link-muted"
+                  href="/2022/02/21/spring/spring-cache-quick-start/"
+                  ><span class="level-item">1 分钟快速上手 Spring Cache</span
+                  ><i class="level-item fas fa-chevron-right"></i
+                ></a>
+              </div>
+            </nav>
+            <div class="card">
+              <div class="card-content">
+                <h3 class="title is-5">评论</h3>
+                <div id="comment-container"></div>
+                <link
+                  rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"
+                />
+                <script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script>
+                <script>
+                  var gitalk = new Gitalk({
+                    id: '2a0b7a5e2060678481d741f210671ac5',
+                    repo: 'glmapper.github.io',
+                    owner: 'glmapper',
+                    clientID: 'd25147ddf77e70d7adfe',
+                    clientSecret: 'c10bbd1ba7a09c96e4106709107d4da85d60be78',
+                    admin: ['glmapper'],
+                    createIssueManually: false,
+                    distractionFreeMode: true,
+                    perPage: 20,
+                    pagerDirection: 'last',
+
+                    enableHotKey: true,
+                    language: 'zh-CN',
+                  })
+                  gitalk.render('comment-container')
+                </script>
+              </div>
+            </div>
+          </div>
+          <div
+            class="column column-left is-4-tablet is-4-desktop is-3-widescreen order-1 is-sticky"
+          >
+            <div class="card widget" data-type="profile">
+              <div class="card-content">
+                <nav class="level">
+                  <div class="level-item has-text-centered flex-shrink-1">
+                    <div>
+                      <figure class="image is-128x128 mx-auto mb-2">
+                        <img
+                          class="avatar is-rounded"
+                          src="/img/self.jpg"
+                          alt="J.Queue"
+                        />
+                      </figure>
+                      <p
+                        class="title is-size-4 is-block"
+                        style="line-height: inherit"
+                      >
+                        J.Queue
+                      </p>
+                      <p class="is-size-6 is-block">Java Developer</p>
+                      <p class="is-size-6 is-flex justify-content-center">
+                        <i class="fas fa-map-marker-alt mr-1"></i
+                        ><span>HeFei AnHui</span>
+                      </p>
+                    </div>
+                  </div>
+                </nav>
+                <nav class="level is-mobile">
+                  <div class="level-item has-text-centered is-marginless">
+                    <div>
+                      <p class="heading">文章</p>
+                      <a href="/archives"><p class="title">108</p></a>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered is-marginless">
+                    <div>
+                      <p class="heading">分类</p>
+                      <a href="/categories"><p class="title">17</p></a>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered is-marginless">
+                    <div>
+                      <p class="heading">标签</p>
+                      <a href="/tags"><p class="title">128</p></a>
+                    </div>
+                  </div>
+                </nav>
+                <div class="level">
+                  <a
+                    class="level-item button is-primary is-rounded"
+                    href="https://github.com/glmapper"
+                    target="_blank"
+                    rel="noopener"
+                    >关注我</a
+                  >
+                </div>
+                <div class="level is-mobile is-multiline">
+                  <a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="Github"
+                    href="https://github.com/glmapper"
+                    ><i class="fab fa-github"></i></a
+                  ><a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="Twitter"
+                    href="https://twitter.com"
+                    ><i class="fab fa-twitter"></i></a
+                  ><a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="weibo"
+                    href="https://weibo.com/u/2412872703"
+                    ><i class="fab fa-weibo"></i></a
+                  ><a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="RSS"
+                    href="/atom.xml"
+                    ><i class="fas fa-rss"></i
+                  ></a>
+                </div>
+              </div>
+            </div>
+            <div class="card widget" data-type="links">
+              <div class="card-content">
+                <div class="menu">
+                  <h3 class="menu-label">链接</h3>
+                  <ul class="menu-list">
+                    <li>
+                      <a
+                        class="level is-mobile"
+                        href="https://juejin.cn/user/3227821827961806"
+                        target="_blank"
+                        rel="noopener"
+                        ><span class="level-left"
+                          ><span class="level-item">掘金社区</span></span
+                        ><span class="level-right"
+                          ><span class="level-item tag">juejin.cn</span></span
+                        ></a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="level is-mobile"
+                        href="https://www.sofastack.tech/"
+                        target="_blank"
+                        rel="noopener"
+                        ><span class="level-left"
+                          ><span class="level-item">SOFAStack</span></span
+                        ><span class="level-right"
+                          ><span class="level-item tag"
+                            >www.sofastack.tech</span
+                          ></span
+                        ></a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card widget" id="toc" data-type="toc">
+              <div class="card-content">
+                <div class="menu">
+                  <h3 class="menu-label">目录</h3>
+                  <ul class="menu-list">
+                    <li>
+                      <a
+                        class="level is-mobile"
+                        href="#加载顺序和-sharedConfigs、extensionConfigs-加载逻辑"
+                        ><span class="level-left"
+                          ><span class="level-item">1</span
+                          ><span class="level-item"
+                            >加载顺序和 sharedConfigs、extensionConfigs
+                            加载逻辑</span
+                          ></span
+                        ></a
+                      >
+                      <ul class="menu-list">
+                        <li>
+                          <a class="level is-mobile" href="#加载顺序"
+                            ><span class="level-left"
+                              ><span class="level-item">1.1</span
+                              ><span class="level-item">加载顺序</span></span
+                            ></a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            class="level is-mobile"
+                            href="#sharedConfigs-加载逻辑"
+                            ><span class="level-left"
+                              ><span class="level-item">1.2</span
+                              ><span class="level-item"
+                                >sharedConfigs 加载逻辑</span
+                              ></span
+                            ></a
+                          >
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <a
+                        class="level is-mobile"
+                        href="#应用配置加载逻辑中的-dataId-计算"
+                        ><span class="level-left"
+                          ><span class="level-item">2</span
+                          ><span class="level-item"
+                            >应用配置加载逻辑中的 dataId 计算</span
+                          ></span
+                        ></a
+                      >
+                      <ul class="menu-list">
+                        <li>
+                          <a class="level is-mobile" href="#直接加载"
+                            ><span class="level-left"
+                              ><span class="level-item">2.1</span
+                              ><span class="level-item">直接加载</span></span
+                            ></a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            class="level is-mobile"
+                            href="#使用指定的-suffix-加载"
+                            ><span class="level-left"
+                              ><span class="level-item">2.2</span
+                              ><span class="level-item"
+                                >使用指定的 suffix 加载</span
+                              ></span
+                            ></a
+                          >
+                        </li>
+                        <li>
+                          <a class="level is-mobile" href="#使用指定的-profile"
+                            ><span class="level-left"
+                              ><span class="level-item">2.3</span
+                              ><span class="level-item"
+                                >使用指定的 profile</span
+                              ></span
+                            ></a
+                          >
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <a class="level is-mobile" href="#配置加载过程"
+                        ><span class="level-left"
+                          ><span class="level-item">3</span
+                          ><span class="level-item">配置加载过程</span></span
+                        ></a
+                      >
+                    </li>
+                    <li>
+                      <a class="level is-mobile" href="#小结"
+                        ><span class="level-left"
+                          ><span class="level-item">4</span
+                          ><span class="level-item">小结</span></span
+                        ></a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <script src="/js/toc.js" defer></script>
+            </div>
+            <div class="card widget" data-type="tags">
+              <div class="card-content">
+                <div class="menu">
+                  <h3 class="menu-label">标签</h3>
+                  <div class="field is-grouped is-grouped-multiline">
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/BeanDefinition/"
+                        ><span class="tag">BeanDefinition</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/BeanPostProcessor/"
+                        ><span class="tag">BeanPostProcessor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/BeanWrapper/"
+                        ><span class="tag">BeanWrapper</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/CAS/"
+                        ><span class="tag">CAS</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ClassLoader/"
+                        ><span class="tag">ClassLoader</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/CopyOnWriteArraySet/"
+                        ><span class="tag">CopyOnWriteArraySet</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Disruptor/"
+                        ><span class="tag">Disruptor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Embedded-Tomcat/"
+                        ><span class="tag">Embedded Tomcat</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Exception/"
+                        ><span class="tag">Exception</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Executor/"
+                        ><span class="tag">Executor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/FX-Application/"
+                        ><span class="tag">FX Application</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/FatJar/"
+                        ><span class="tag">FatJar</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Ioc/"
+                        ><span class="tag">Ioc</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/JAR/"
+                        ><span class="tag">JAR</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/JDK/"
+                        ><span class="tag">JDK</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/JUC/"
+                        ><span class="tag">JUC</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Kafka/"
+                        ><span class="tag">Kafka</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/MANIFEST-MF/"
+                        ><span class="tag">MANIFEST.MF</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Mockito/"
+                        ><span class="tag">Mockito</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Mysql/"
+                        ><span class="tag">Mysql</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/OOM/"
+                        ><span class="tag">OOM</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/OpenTracing/"
+                        ><span class="tag">OpenTracing</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/PropertySource/"
+                        ><span class="tag">PropertySource</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Readiness-Check/"
+                        ><span class="tag">Readiness Check</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ResourceLoader/"
+                        ><span class="tag">ResourceLoader</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/RestTemplate/"
+                        ><span class="tag">RestTemplate</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/RocketMQ/"
+                        ><span class="tag">RocketMQ</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SOFA/"
+                        ><span class="tag">SOFA</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SOFAArk/"
+                        ><span class="tag">SOFAArk</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SOFAStack/"
+                        ><span class="tag">SOFAStack</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SpringBoot/"
+                        ><span class="tag">SpringBoot</span
+                        ><span class="tag">16</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/TestDouble/"
+                        ><span class="tag">TestDouble</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/ThreadPoolExecutor/"
+                        ><span class="tag">ThreadPoolExecutor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Tracer/"
+                        ><span class="tag">Tracer</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Zipkin/"
+                        ><span class="tag">Zipkin</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ab-test/"
+                        ><span class="tag">ab test</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/actuator/"
+                        ><span class="tag">actuator</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/aop/"
+                        ><span class="tag">aop</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/api/"
+                        ><span class="tag">api</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/apollo/"
+                        ><span class="tag">apollo</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/bean-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">bean 扩展机制</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/bean-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+                        ><span class="tag">bean 生命周期</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/bootstrap/"
+                        ><span class="tag">bootstrap</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/cache/"
+                        ><span class="tag">cache</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/classloader/"
+                        ><span class="tag">classloader</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/config/"
+                        ><span class="tag">config</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/cookie/"
+                        ><span class="tag">cookie</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/curator/"
+                        ><span class="tag">curator</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/docker/"
+                        ><span class="tag">docker</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/eureka/"
+                        ><span class="tag">eureka</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/event/"
+                        ><span class="tag">event</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/feign/"
+                        ><span class="tag">feign</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/gateway/"
+                        ><span class="tag">gateway</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/gc/"
+                        ><span class="tag">gc</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/git/"
+                        ><span class="tag">git</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/github/"
+                        ><span class="tag">github</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/guava/"
+                        ><span class="tag">guava</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/http/"
+                        ><span class="tag">http</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/hystrix/"
+                        ><span class="tag">hystrix</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/java/"
+                        ><span class="tag">java</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/junit/"
+                        ><span class="tag">junit</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/jvm/"
+                        ><span class="tag">jvm</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/kafka/"
+                        ><span class="tag">kafka</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/linux/"
+                        ><span class="tag">linux</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/lock/"
+                        ><span class="tag">lock</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/log/"
+                        ><span class="tag">log</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/logback/"
+                        ><span class="tag">logback</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/maven/"
+                        ><span class="tag">maven</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/maven-debug/"
+                        ><span class="tag">maven debug</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/maven-plugin/"
+                        ><span class="tag">maven plugin</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/merge/"
+                        ><span class="tag">merge</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/microservices/"
+                        ><span class="tag">microservices</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/mock/"
+                        ><span class="tag">mock</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/mybatis/"
+                        ><span class="tag">mybatis</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/mysql/"
+                        ><span class="tag">mysql</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/nacos/"
+                        ><span class="tag">nacos</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/namespace/"
+                        ><span class="tag">namespace</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/netflix/"
+                        ><span class="tag">netflix</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/nginx/"
+                        ><span class="tag">nginx</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/oop-klass/"
+                        ><span class="tag">oop-klass</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/reactor/"
+                        ><span class="tag">reactor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/rebase/"
+                        ><span class="tag">rebase</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/redis/"
+                        ><span class="tag">redis</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/rpc/"
+                        ><span class="tag">rpc</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/session/"
+                        ><span class="tag">session</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/set/"
+                        ><span class="tag">set</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/shell/"
+                        ><span class="tag">shell</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/slf4j/"
+                        ><span class="tag">slf4j</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/spring/"
+                        ><span class="tag">spring</span
+                        ><span class="tag">11</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/spring-cloud/"
+                        ><span class="tag">spring cloud</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/spring-mvc/"
+                        ><span class="tag">spring mvc</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/spring-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">spring 扩展机制</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/sql/"
+                        ><span class="tag">sql</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ssh/"
+                        ><span class="tag">ssh</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/starter-%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">starter 机制</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/test/"
+                        ><span class="tag">test</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/testing/"
+                        ><span class="tag">testing</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/thread/"
+                        ><span class="tag">thread</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/tomcat/"
+                        ><span class="tag">tomcat</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/top/"
+                        ><span class="tag">top</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/typecheck/"
+                        ><span class="tag">typecheck</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/yapi/"
+                        ><span class="tag">yapi</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/yum/"
+                        ><span class="tag">yum</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/zookeeper/"
+                        ><span class="tag">zookeeper</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E4%B8%AD%E5%8F%B0/"
+                        ><span class="tag">中台</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">事件机制</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/"
+                        ><span class="tag">依赖注入</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"
+                        ><span class="tag">分布式</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/"
+                        ><span class="tag">分布式链路跟踪</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+                        ><span class="tag">反向代理</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%8F%8D%E5%B0%84/"
+                        ><span class="tag">反射</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%90%88%E8%82%A5/"
+                        ><span class="tag">合肥</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"
+                        ><span class="tag">并发编程</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"
+                        ><span class="tag">微服务</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%9D%AD%E5%B7%9E/"
+                        ><span class="tag">杭州</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%9E%B6%E6%9E%84/"
+                        ><span class="tag">架构</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%A1%86%E6%9E%B6/"
+                        ><span class="tag">框架</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%B3%9B%E5%9E%8B/"
+                        ><span class="tag">泛型</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+                        ><span class="tag">注册中心</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%B6%88%E6%81%AF/"
+                        ><span class="tag">消息</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/"
+                        ><span class="tag">类加载</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/"
+                        ><span class="tag">线程池</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/"
+                        ><span class="tag">自动配置</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"
+                        ><span class="tag">负载均衡</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%BF%90%E7%BB%B4/"
+                        ><span class="tag">运维</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%BF%AD%E4%BB%A3%E5%99%A8/"
+                        ><span class="tag">迭代器</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E9%85%8D%E7%BD%AE/"
+                        ><span class="tag">配置</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E9%9B%86%E7%BE%A4%E9%80%89%E4%B8%BB/"
+                        ><span class="tag">集群选主</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="column-right-shadow is-hidden-widescreen is-sticky"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <div class="container">
+        <div class="level">
+          <div class="level-start">
+            <a class="footer-logo is-block mb-2" href="/">J.Queue的技术博客</a>
+            <p class="is-size-7">
+              <span>&copy; 2022 J.Queue</span>  Powered by
+              <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a
+              > &amp; <a
+                href="https://github.com/ppoffice/hexo-theme-icarus"
+                target="_blank"
+                rel="noopener"
+                >Icarus</a
+              ><br /><span id="busuanzi_container_site_uv"
+                >共<span id="busuanzi_value_site_uv">0</span>个访客</span
+              >
+            </p>
+          </div>
+          <div class="level-end">
+            <div class="field has-addons">
+              <p class="control">
+                <a
+                  class="button is-transparent is-large"
+                  target="_blank"
+                  rel="noopener"
+                  title="Download on GitHub"
+                  href="https://github.com/glmapper"
+                  ><i class="fab fa-github"></i
+                ></a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+    <script>
+      moment.locale('zh-CN')
+    </script>
+    <script>
+      var IcarusThemeSettings = {
+        article: {
+          highlight: {
+            clipboard: false,
+            fold: '',
+          },
+        },
+      }
+    </script>
+    <script src="/js/column.js"></script>
+    <script src="/js/animation.js"></script>
+    <a id="back-to-top" title="回到顶端" href="javascript:;"
+      ><i class="fas fa-chevron-up"></i
+    ></a>
+    <script src="/js/back_to_top.js" defer></script>
+    <!--!--><!--!--><!--!--><!--!-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js"
+      defer
+    ></script>
+    <script>
+      window.addEventListener('load', () => {
+        window.cookieconsent.initialise({
+          type: 'info',
+          theme: 'edgeless',
+          static: false,
+          position: 'bottom-left',
+          content: {
+            message: '此网站使用Cookie来改善您的体验。',
+            dismiss: '知道了！',
+            allow: '允许使用Cookie',
+            deny: '拒绝',
+            link: '了解更多',
+            policy: 'Cookie政策',
+            href: 'https://www.cookiesandyou.com/',
+          },
+          palette: {
+            popup: {
+              background: '#edeff5',
+              text: '#838391',
+            },
+            button: {
+              background: '#4b81e8',
+            },
+          },
         })
-        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/img/self.jpg" alt="卫恒"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">卫恒</p><p class="is-size-6 is-block">Java Developer</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HeFei AnHui</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">108</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">17</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">128</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/glmapper" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/glmapper"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="weibo" href="https://weibo.com/u/2412872703"><i class="fab fa-weibo"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://juejin.cn/user/3227821827961806" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">掘金社区</span></span><span class="level-right"><span class="level-item tag">juejin.cn</span></span></a></li><li><a class="level is-mobile" href="https://www.sofastack.tech/" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">SOFAStack</span></span><span class="level-right"><span class="level-item tag">www.sofastack.tech</span></span></a></li></ul></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#加载顺序和-sharedConfigs、extensionConfigs-加载逻辑"><span class="level-left"><span class="level-item">1</span><span class="level-item">加载顺序和 sharedConfigs、extensionConfigs 加载逻辑</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#加载顺序"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">加载顺序</span></span></a></li><li><a class="level is-mobile" href="#sharedConfigs-加载逻辑"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">sharedConfigs 加载逻辑</span></span></a></li></ul></li><li><a class="level is-mobile" href="#应用配置加载逻辑中的-dataId-计算"><span class="level-left"><span class="level-item">2</span><span class="level-item">应用配置加载逻辑中的 dataId 计算</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#直接加载"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">直接加载</span></span></a></li><li><a class="level is-mobile" href="#使用指定的-suffix-加载"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">使用指定的 suffix 加载</span></span></a></li><li><a class="level is-mobile" href="#使用指定的-profile"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">使用指定的 profile</span></span></a></li></ul></li><li><a class="level is-mobile" href="#配置加载过程"><span class="level-left"><span class="level-item">3</span><span class="level-item">配置加载过程</span></span></a></li><li><a class="level is-mobile" href="#小结"><span class="level-left"><span class="level-item">4</span><span class="level-item">小结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/BeanDefinition/"><span class="tag">BeanDefinition</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/BeanPostProcessor/"><span class="tag">BeanPostProcessor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/BeanWrapper/"><span class="tag">BeanWrapper</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CAS/"><span class="tag">CAS</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ClassLoader/"><span class="tag">ClassLoader</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CopyOnWriteArraySet/"><span class="tag">CopyOnWriteArraySet</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Disruptor/"><span class="tag">Disruptor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Embedded-Tomcat/"><span class="tag">Embedded Tomcat</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Exception/"><span class="tag">Exception</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Executor/"><span class="tag">Executor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/FX-Application/"><span class="tag">FX Application</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/FatJar/"><span class="tag">FatJar</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Ioc/"><span class="tag">Ioc</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JAR/"><span class="tag">JAR</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JDK/"><span class="tag">JDK</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JUC/"><span class="tag">JUC</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Kafka/"><span class="tag">Kafka</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MANIFEST-MF/"><span class="tag">MANIFEST.MF</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Mockito/"><span class="tag">Mockito</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Mysql/"><span class="tag">Mysql</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OOM/"><span class="tag">OOM</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenTracing/"><span class="tag">OpenTracing</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/PropertySource/"><span class="tag">PropertySource</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Readiness-Check/"><span class="tag">Readiness Check</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ResourceLoader/"><span class="tag">ResourceLoader</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/RestTemplate/"><span class="tag">RestTemplate</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/RocketMQ/"><span class="tag">RocketMQ</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SOFA/"><span class="tag">SOFA</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SOFAArk/"><span class="tag">SOFAArk</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SOFAStack/"><span class="tag">SOFAStack</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringBoot/"><span class="tag">SpringBoot</span><span class="tag">16</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TestDouble/"><span class="tag">TestDouble</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ThreadPoolExecutor/"><span class="tag">ThreadPoolExecutor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Tracer/"><span class="tag">Tracer</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Zipkin/"><span class="tag">Zipkin</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ab-test/"><span class="tag">ab test</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/actuator/"><span class="tag">actuator</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/aop/"><span class="tag">aop</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/api/"><span class="tag">api</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/apollo/"><span class="tag">apollo</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/bean-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"><span class="tag">bean 扩展机制</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/bean-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"><span class="tag">bean 生命周期</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/bootstrap/"><span class="tag">bootstrap</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/cache/"><span class="tag">cache</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/classloader/"><span class="tag">classloader</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/config/"><span class="tag">config</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/cookie/"><span class="tag">cookie</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/curator/"><span class="tag">curator</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/docker/"><span class="tag">docker</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/eureka/"><span class="tag">eureka</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/event/"><span class="tag">event</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/feign/"><span class="tag">feign</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/gateway/"><span class="tag">gateway</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/gc/"><span class="tag">gc</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/git/"><span class="tag">git</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/github/"><span class="tag">github</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/guava/"><span class="tag">guava</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/http/"><span class="tag">http</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/hystrix/"><span class="tag">hystrix</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/junit/"><span class="tag">junit</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/jvm/"><span class="tag">jvm</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/kafka/"><span class="tag">kafka</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/linux/"><span class="tag">linux</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/lock/"><span class="tag">lock</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/log/"><span class="tag">log</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/logback/"><span class="tag">logback</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/maven/"><span class="tag">maven</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/maven-debug/"><span class="tag">maven debug</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/maven-plugin/"><span class="tag">maven plugin</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/merge/"><span class="tag">merge</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/microservices/"><span class="tag">microservices</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mock/"><span class="tag">mock</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mybatis/"><span class="tag">mybatis</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mysql/"><span class="tag">mysql</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/nacos/"><span class="tag">nacos</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/namespace/"><span class="tag">namespace</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/netflix/"><span class="tag">netflix</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/nginx/"><span class="tag">nginx</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/oop-klass/"><span class="tag">oop-klass</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/reactor/"><span class="tag">reactor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/rebase/"><span class="tag">rebase</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/redis/"><span class="tag">redis</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/rpc/"><span class="tag">rpc</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/session/"><span class="tag">session</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/set/"><span class="tag">set</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/shell/"><span class="tag">shell</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/slf4j/"><span class="tag">slf4j</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring/"><span class="tag">spring</span><span class="tag">11</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring-cloud/"><span class="tag">spring cloud</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring-mvc/"><span class="tag">spring mvc</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"><span class="tag">spring 扩展机制</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/sql/"><span class="tag">sql</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ssh/"><span class="tag">ssh</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/starter-%E6%9C%BA%E5%88%B6/"><span class="tag">starter 机制</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/test/"><span class="tag">test</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/testing/"><span class="tag">testing</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/thread/"><span class="tag">thread</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/tomcat/"><span class="tag">tomcat</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/top/"><span class="tag">top</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/typecheck/"><span class="tag">typecheck</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/yapi/"><span class="tag">yapi</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/yum/"><span class="tag">yum</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/zookeeper/"><span class="tag">zookeeper</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%B8%AD%E5%8F%B0/"><span class="tag">中台</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/"><span class="tag">事件机制</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/"><span class="tag">依赖注入</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"><span class="tag">分布式</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/"><span class="tag">分布式链路跟踪</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"><span class="tag">反向代理</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%8F%8D%E5%B0%84/"><span class="tag">反射</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%90%88%E8%82%A5/"><span class="tag">合肥</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="tag">并发编程</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"><span class="tag">微服务</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9D%AD%E5%B7%9E/"><span class="tag">杭州</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9E%B6%E6%9E%84/"><span class="tag">架构</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%A1%86%E6%9E%B6/"><span class="tag">框架</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B3%9B%E5%9E%8B/"><span class="tag">泛型</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"><span class="tag">注册中心</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B6%88%E6%81%AF/"><span class="tag">消息</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/"><span class="tag">类加载</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/"><span class="tag">线程池</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/"><span class="tag">自动配置</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"><span class="tag">负载均衡</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%BF%90%E7%BB%B4/"><span class="tag">运维</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%BF%AD%E4%BB%A3%E5%99%A8/"><span class="tag">迭代器</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%85%8D%E7%BD%AE/"><span class="tag">配置</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%9B%86%E7%BE%A4%E9%80%89%E4%B8%BB/"><span class="tag">集群选主</span><span class="tag">1</span></a></div></div></div></div></div><div class="column-right-shadow is-hidden-widescreen is-sticky"></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">磊叔的技术博客</a><p class="is-size-7"><span>&copy; 2022 卫恒</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/glmapper"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
-            article: {
-                highlight: {
-                    clipboard: false,
-                    fold: ''
-                }
-            }
-        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
-      window.cookieconsent.initialise({
-        type: "info",
-        theme: "edgeless",
-        static: false,
-        position: "bottom-left",
-        content: {
-          message: "此网站使用Cookie来改善您的体验。",
-          dismiss: "知道了！",
-          allow: "允许使用Cookie",
-          deny: "拒绝",
-          link: "了解更多",
-          policy: "Cookie政策",
-          href: "https://www.cookiesandyou.com/",
-        },
-        palette: {
-          popup: {
-            background: "#edeff5",
-            text: "#838391"
-          },
-          button: {
-            background: "#4b81e8"
-          },
-        },
-      });
-    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
-            if (typeof $.fn.lightGallery === 'function') {
-                $('.article').lightGallery({ selector: '.gallery-item' });
-            }
-            if (typeof $.fn.justifiedGallery === 'function') {
-                if ($('.justified-gallery > p > .gallery-item').length) {
-                    $('.justified-gallery > p > .gallery-item').unwrap();
-                }
-                $('.justified-gallery').justifiedGallery();
-            }
-        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
-            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
-        });</script></body></html>
+      })
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"
+      defer
+    ></script>
+    <script>
+      window.addEventListener('load', () => {
+        if (typeof $.fn.lightGallery === 'function') {
+          $('.article').lightGallery({ selector: '.gallery-item' })
+        }
+        if (typeof $.fn.justifiedGallery === 'function') {
+          if ($('.justified-gallery > p > .gallery-item').length) {
+            $('.justified-gallery > p > .gallery-item').unwrap()
+          }
+          $('.justified-gallery').justifiedGallery()
+        }
+      })
+    </script>
+    <!--!--><!--!--><!--!--><!--!--><!--!-->
+    <script src="/js/main.js" defer></script>
+    <div class="searchbox">
+      <div class="searchbox-container">
+        <div class="searchbox-header">
+          <div class="searchbox-input-container">
+            <input
+              class="searchbox-input"
+              type="text"
+              placeholder="想要查找什么..."
+            />
+          </div>
+          <a class="searchbox-close" href="javascript:;">×</a>
+        </div>
+        <div class="searchbox-body"></div>
+      </div>
+    </div>
+    <script src="/js/insight.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        loadInsight(
+          { contentUrl: '/content.json' },
+          {
+            hint: '想要查找什么...',
+            untitled: '(无标题)',
+            posts: '文章',
+            pages: '页面',
+            categories: '分类',
+            tags: '标签',
+          }
+        )
+      })
+    </script>
+  </body>
+</html>

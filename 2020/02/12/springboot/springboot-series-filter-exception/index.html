@@ -1,129 +1,2042 @@
-<!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理 - 磊叔的技术博客</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="磊叔的技术博客"><meta name="msapplication-TileImage" content="/img/favicon.ico"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="磊叔的技术博客"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController 这个接口能力；其内置了一个 BasicErrorController 对异常进行统一的处理，当在 Controller 发生异常的时候会自动把请求 forward 到 &amp;#x2F;error 这个请求 path 下(&amp;#x2F;error 是 SpringBoot 提供的一个默认的mapping)。BasicErrorContro"><meta property="og:type" content="blog"><meta property="og:title" content="SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理"><meta property="og:url" content="http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/"><meta property="og:site_name" content="磊叔的技术博客"><meta property="og:description" content="本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController 这个接口能力；其内置了一个 BasicErrorController 对异常进行统一的处理，当在 Controller 发生异常的时候会自动把请求 forward 到 &amp;#x2F;error 这个请求 path 下(&amp;#x2F;error 是 SpringBoot 提供的一个默认的mapping)。BasicErrorContro"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://www.glmapper.com/img/og_image.png"><meta property="article:published_time" content="2020-02-12T08:24:11.000Z"><meta property="article:modified_time" content="2022-04-23T08:26:56.942Z"><meta property="article:author" content="卫恒"><meta property="article:tag" content="SpringBoot"><meta property="article:tag" content="Exception"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/"},"headline":"SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理","image":["http://www.glmapper.com/img/og_image.png"],"datePublished":"2020-02-12T08:24:11.000Z","dateModified":"2022-04-23T08:26:56.942Z","author":{"@type":"Person","name":"卫恒"},"publisher":{"@type":"Organization","name":"磊叔的技术博客","logo":{"@type":"ImageObject","url":{"text":"磊叔的技术博客"}}},"description":"本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController 这个接口能力；其内置了一个 BasicErrorController 对异常进行统一的处理，当在 Controller 发生异常的时候会自动把请求 forward 到 &#x2F;error 这个请求 path 下(&#x2F;error 是 SpringBoot 提供的一个默认的mapping)。BasicErrorContro"}</script><link rel="canonical" href="http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/"><link rel="icon" href="/img/favicon.ico"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/github.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
-  (function () {
-      function switchTab() {
-          if (!location.hash) {
-            return;
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta />
+    <title>
+      SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理 -
+      J.Queue的技术博客
+    </title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="application-name" content="J.Queue的技术博客" />
+    <meta name="msapplication-TileImage" content="/img/favicon.ico" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="J.Queue的技术博客" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta
+      name="description"
+      content="本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController 这个接口能力；其内置了一个 BasicErrorController 对异常进行统一的处理，当在 Controller 发生异常的时候会自动把请求 forward 到 &amp;#x2F;error 这个请求 path 下(&amp;#x2F;error 是 SpringBoot 提供的一个默认的mapping)。BasicErrorContro"
+    />
+    <meta property="og:type" content="blog" />
+    <meta
+      property="og:title"
+      content="SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理"
+    />
+    <meta
+      property="og:url"
+      content="http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/"
+    />
+    <meta property="og:site_name" content="J.Queue的技术博客" />
+    <meta
+      property="og:description"
+      content="本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController 这个接口能力；其内置了一个 BasicErrorController 对异常进行统一的处理，当在 Controller 发生异常的时候会自动把请求 forward 到 &amp;#x2F;error 这个请求 path 下(&amp;#x2F;error 是 SpringBoot 提供的一个默认的mapping)。BasicErrorContro"
+    />
+    <meta property="og:locale" content="zh_CN" />
+    <meta
+      property="og:image"
+      content="http://www.glmapper.com/img/og_image.png"
+    />
+    <meta
+      property="article:published_time"
+      content="2020-02-12T08:24:11.000Z"
+    />
+    <meta property="article:modified_time" content="2022-04-23T08:26:56.942Z" />
+    <meta property="article:author" content="J.Queue" />
+    <meta property="article:tag" content="SpringBoot" />
+    <meta property="article:tag" content="Exception" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:image" content="/img/og_image.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/"
+        },
+        "headline": "SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理",
+        "image": ["http://www.glmapper.com/img/og_image.png"],
+        "datePublished": "2020-02-12T08:24:11.000Z",
+        "dateModified": "2022-04-23T08:26:56.942Z",
+        "author": { "@type": "Person", "name": "J.Queue" },
+        "publisher": {
+          "@type": "Organization",
+          "name": "J.Queue的技术博客",
+          "logo": {
+            "@type": "ImageObject",
+            "url": { "text": "J.Queue的技术博客" }
           }
-          Array
-              .from(document.querySelectorAll('.tab-content'))
-              .forEach($tab => {
-                  $tab.classList.add('is-hidden');
-              });
-          Array
-              .from(document.querySelectorAll('.tabs li'))
-              .forEach($tab => {
-                  $tab.classList.remove('is-active');
-              });
-          const $activeTab = document.querySelector(location.hash);
-          if ($activeTab) {
-              $activeTab.classList.remove('is-hidden');
-          }
-          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
-          if ($tabMenu) {
-              $tabMenu.parentElement.classList.add('is-active');
-          }
+        },
+        "description": "本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController 这个接口能力；其内置了一个 BasicErrorController 对异常进行统一的处理，当在 Controller 发生异常的时候会自动把请求 forward 到 &#x2F;error 这个请求 path 下(&#x2F;error 是 SpringBoot 提供的一个默认的mapping)。BasicErrorContro"
       }
-      switchTab();
-      window.addEventListener('hashchange', switchTab, false);
-  })();
-  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="磊叔的技术博客" type="application/atom+xml">
-</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">磊叔的技术博客</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/glmapper"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-10-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2020-02-12T08:24:11.000Z" title="2020/2/12 下午4:24:11">2020-02-12</time>发表</span><span class="level-item"><time dateTime="2022-04-23T08:26:56.942Z" title="2022/4/23 下午4:26:56">2022-04-23</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/SpringBoot/">SpringBoot</a></span><span class="level-item">14 分钟读完 (大约2044个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理</h1><div class="content"><div class="output_wrapper" id="output_wrapper_id" style="font-size: 16px; color: rgb(62, 62, 62); line-height: 1.6; word-spacing: 0px; letter-spacing: 0px; font-family: 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;"><p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController 这个接口能力；其内置了一个 BasicErrorController 对异常进行统一的处理，当在 Controller 发生异常的时候会自动把请求 forward 到 /error 这个请求 path 下(/error 是 SpringBoot 提供的一个默认的mapping)。BasicErrorController 提供两种返回错误：1、页面返回；2、json 返回。</p>
+    </script>
+    <link
+      rel="canonical"
+      href="http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/"
+    />
+    <link rel="icon" href="/img/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/github.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"
+    />
+    <link rel="stylesheet" href="/css/default.css" />
+    <style>
+      body > .footer,
+      body > .navbar,
+      body > .section {
+        opacity: 0;
+      }
+    </style>
+    <!--!-->
+    <!--!-->
+    <!--!-->
+    <script
+      src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+      defer
+    ></script>
+    <!--!-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"
+    />
+    <!--!-->
+    <!--!-->
+    <style>
+      .pace {
+        -webkit-pointer-events: none;
+        pointer-events: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+      .pace-inactive {
+        display: none;
+      }
+      .pace .pace-progress {
+        background: #3273dc;
+        position: fixed;
+        z-index: 2000;
+        top: 0;
+        right: 100%;
+        width: 100%;
+        height: 2px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script>
+    <!--!-->
+    <!--!-->
+    <!-- hexo injector head_end start -->
+    <script>
+      ;(function () {
+        function switchTab() {
+          if (!location.hash) {
+            return
+          }
+          Array.from(document.querySelectorAll('.tab-content')).forEach(
+            ($tab) => {
+              $tab.classList.add('is-hidden')
+            }
+          )
+          Array.from(document.querySelectorAll('.tabs li')).forEach(($tab) => {
+            $tab.classList.remove('is-active')
+          })
+          const $activeTab = document.querySelector(location.hash)
+          if ($activeTab) {
+            $activeTab.classList.remove('is-hidden')
+          }
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`)
+          if ($tabMenu) {
+            $tabMenu.parentElement.classList.add('is-active')
+          }
+        }
+        switchTab()
+        window.addEventListener('hashchange', switchTab, false)
+      })()
+    </script>
+    <!-- hexo injector head_end end -->
+    <meta name="generator" content="Hexo 6.1.0" />
+    <link
+      rel="alternate"
+      href="/atom.xml"
+      title="J.Queue的技术博客"
+      type="application/atom+xml"
+    />
+  </head>
+  <body class="is-3-column">
+    <nav class="navbar navbar-main">
+      <div class="container navbar-container">
+        <div class="navbar-brand justify-content-center">
+          <a class="navbar-item navbar-logo" href="/">J.Queue的技术博客</a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="/">首页</a
+            ><a class="navbar-item" href="/archives">归档</a
+            ><a class="navbar-item" href="/categories">分类</a
+            ><a class="navbar-item" href="/tags">Tags</a
+            ><a class="navbar-item" href="/about">关于</a>
+          </div>
+          <div class="navbar-end">
+            <a
+              class="navbar-item"
+              target="_blank"
+              rel="noopener"
+              title="Download on GitHub"
+              href="https://github.com/glmapper"
+              ><i class="fab fa-github"></i></a
+            ><a
+              class="navbar-item is-hidden-tablet catalogue"
+              title="目录"
+              href="javascript:;"
+              ><i class="fas fa-list-ul"></i></a
+            ><a class="navbar-item search" title="搜索" href="javascript:;"
+              ><i class="fas fa-search"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <div class="columns">
+          <div
+            class="column order-2 column-main is-8-tablet is-8-desktop is-10-widescreen"
+          >
+            <div class="card">
+              <article class="card-content article" role="article">
+                <div
+                  class="article-meta is-size-7 is-uppercase level is-mobile"
+                >
+                  <div class="level-left">
+                    <span class="level-item"
+                      ><time
+                        datetime="2020-02-12T08:24:11.000Z"
+                        title="2020/2/12 下午4:24:11"
+                        >2020-02-12</time
+                      >发表</span
+                    ><span class="level-item"
+                      ><time
+                        datetime="2022-04-23T08:26:56.942Z"
+                        title="2022/4/23 下午4:26:56"
+                        >2022-04-23</time
+                      >更新</span
+                    ><span class="level-item"
+                      ><a class="link-muted" href="/categories/SpringBoot/"
+                        >SpringBoot</a
+                      ></span
+                    ><span class="level-item">14 分钟读完 (大约2044个字)</span
+                    ><span class="level-item" id="busuanzi_container_page_pv"
+                      ><span id="busuanzi_value_page_pv">0</span>次访问</span
+                    >
+                  </div>
+                </div>
+                <h1 class="title is-3 is-size-4-mobile">
+                  SpringBoot 实践系列-Filter 中的异常处理和 Controller
+                  中的异常处理
+                </h1>
+                <div class="content">
+                  <div
+                    class="output_wrapper"
+                    id="output_wrapper_id"
+                    style="
+                      font-size: 16px;
+                      color: rgb(62, 62, 62);
+                      line-height: 1.6;
+                      word-spacing: 0px;
+                      letter-spacing: 0px;
+                      font-family: 'Helvetica Neue', Helvetica,
+                        'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+                    "
+                  >
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      本篇主要是记录如何使用 SpringBoot 所提供的 ErrorController
+                      这个接口能力；其内置了一个 BasicErrorController
+                      对异常进行统一的处理，当在 Controller
+                      发生异常的时候会自动把请求 forward 到 /error 这个请求 path
+                      下(/error 是 SpringBoot
+                      提供的一个默认的mapping)。BasicErrorController
+                      提供两种返回错误：1、页面返回；2、json 返回。
+                    </p>
 
-<span id="more"></span>
+                    <span id="more"></span>
 
-<h2 id="h" style="color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px; font-weight: bold; font-size: 1.4em;"><span style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;">背景</span></h2>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">开发中遇到的一个问题：项目中所有的 rest 请求均是通过 json 形式返回，且自定义了一个统一的数据结构对象，如下：</p>
-<pre style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;"><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-class" style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">class</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">Response</span>&lt;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">T</span>&gt;&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;数据</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;T&nbsp;data;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;success&nbsp;标记</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">boolean</span>&nbsp;success;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;异常信息</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;String&nbsp;error;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;省略&nbsp;get&nbsp;set</span><br>&#125;<br></code></pre>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">这个结构非常常见，相信很多开发者都这么玩过。项目中 rest 请求返回的所有结果都是以 Response 对象形式返回，如下：</p>
-<pre style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;"><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RequestMapping</span>(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"test"</span>)<br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;Response&lt;String&gt;&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">testApi</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">()</span></span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;Response&lt;String&gt;&nbsp;result&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response&lt;&gt;();<br>&nbsp;&nbsp;&nbsp;&nbsp;result.setData(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"this&nbsp;is&nbsp;glmapper&nbsp;blog"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;result.setSuccess(<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">true</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>&nbsp;result;<br>&#125;<br></code></pre>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">这基本是最简化版的一个模型；出于安全考虑，现在有个需求是需要对每个请求做校验，比如校验请求中是否携带 token 这种。思路很简单就是通过拦截器或者过滤器的方式来对请求做拦截检验。</p>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">其实不管是拦截器还是过滤器，需要考虑的一个问题是，在校验不通过或者校验时产生异常的情况下，怎么把异常信息以项目中规定的统一数据格式返回，即返回 Response。</p>
-<h2 id="hresponse" style="color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px; font-weight: bold; font-size: 1.4em;"><span style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;">直接将 Response 写回去</span></h2>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">利用 ServletResponse 中提供的 PrintWriter，将 Response 以 json 格式直接 print 回去。大概代码如下：</p>
-<pre style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;"><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@Override</span><br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">void</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">doFilter</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(ServletRequest&nbsp;servletRequest,&nbsp;ServletResponse&nbsp;servletResponse,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FilterChain&nbsp;chain)</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">throws</span>&nbsp;IOException,&nbsp;ServletException&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;HttpServletRequest&nbsp;request&nbsp;=&nbsp;(HttpServletRequest)&nbsp;servletRequest;<br>&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;requestURI&nbsp;=&nbsp;request.getRequestURI();<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;mock&nbsp;测试异常请求</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">if</span>&nbsp;(requestURI.contains(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"testTokenError"</span>))&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Response&lt;String&gt;&nbsp;response&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response&lt;&gt;();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.setError(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"token&nbsp;validation&nbsp;fails"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;回写异常信息</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;returnResponse((HttpServletResponse)servletResponse,JSONObject.toJSONString(response));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;返回</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;chain.doFilter(servletRequest,&nbsp;servletResponse);<br>&#125;<br><br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">void</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">returnResponse</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(HttpServletResponse&nbsp;response,&nbsp;String&nbsp;data)</span>&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;PrintWriter&nbsp;writer&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">null</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;response.setCharacterEncoding(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"UTF-8"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;response.setContentType(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"text/html;&nbsp;charset=utf-8"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">try</span>&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writer&nbsp;=&nbsp;response.getWriter();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;通过&nbsp;PrintWriter&nbsp;将&nbsp;data&nbsp;数据直接&nbsp;print&nbsp;回去</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writer.print(data);<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">catch</span>&nbsp;(IOException&nbsp;e)&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">finally</span>&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">if</span>&nbsp;(writer&nbsp;!=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">null</span>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writer.close();<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&#125;<br></code></pre>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">这种方式比较简单和直接，print 异常数据之后直接 return，不再继续过滤器链。</p>
-<h2 id="hbasicerrorcontroller" style="color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px; font-weight: bold; font-size: 1.4em;"><span style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;">抛出异常，通过 BasicErrorController 方式处理</span></h2>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">这种方式是利用了 SpringBoot 本身提供的能力，可以更优雅的处理错误信息。代码大致如下：</p>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;"><strong style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; font-weight: bold;">1、是在 Filter 中就直接抛出一个异常</strong></p>
-<pre style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;"><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@Override</span><br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">void</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">doFilter</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(ServletRequest&nbsp;servletRequest,&nbsp;ServletResponse&nbsp;servletResponse,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FilterChain&nbsp;chain)</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">throws</span>&nbsp;IOException,&nbsp;ServletException&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;HttpServletRequest&nbsp;request&nbsp;=&nbsp;(HttpServletRequest)&nbsp;servletRequest;<br>&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;requestURI&nbsp;=&nbsp;request.getRequestURI();<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;mock&nbsp;测试异常请求</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">if</span>&nbsp;(requestURI.contains(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"testTokenError"</span>))&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;直接返回一个自定义的异常</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">throw</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;ValidationException(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"token&nbsp;validation&nbsp;fails"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;chain.doFilter(servletRequest,&nbsp;servletResponse);<br>&#125;<br></code></pre>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;"><strong style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; font-weight: bold;">2、定义一个异常处理的 Controller</strong></p>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">这里定义一个 TokenErrorController ，继承自 SpringBoot 提供的 BasicErrorController 这个类，然后重写 error 这个方法（如果是页面的话，重写 errorHtml 这个方法），用于返回自定义的 Response 数据。代码如下：</p>
-<pre style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;"><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RestController</span><br><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-class" style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">class</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">TokenErrorController</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">extends</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">BasicErrorController</span>&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;重写&nbsp;error&nbsp;方法</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@Override</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RequestMapping</span>(produces&nbsp;=&nbsp;&#123;&nbsp;MediaType.APPLICATION_JSON_VALUE&nbsp;&#125;)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;ResponseEntity&lt;Map&lt;String,&nbsp;Object&gt;&gt;&nbsp;error(HttpServletRequest&nbsp;request)&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String,&nbsp;Object&gt;&nbsp;body&nbsp;=&nbsp;getErrorAttributes(request,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isIncludeStackTrace(request,&nbsp;MediaType.ALL));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpStatus&nbsp;status&nbsp;=&nbsp;getStatus(request);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;拿到&nbsp;body&nbsp;中的异常&nbsp;message&nbsp;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;message&nbsp;=&nbsp;body.get(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"message"</span>).toString();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;构建&nbsp;Response&nbsp;对象</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Response&nbsp;response&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;将&nbsp;message&nbsp;的&nbsp;设置到&nbsp;response&nbsp;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.setError(message);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;返回</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;ResponseEntity(response,&nbsp;status);<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;省略其他无关代码</span><br>&#125;<br></code></pre>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">这样就可以实现在不改动之前工程任何代码的情况下只处理额外 Filter 中抛出的异常了。需要注意的是，上述是通过 BasicErrorController 来接受了 Filter 抛出的异常信息，然后再通过 BasicErrorController 将异常信息进行包装并且返回。为什么要提一下这个呢？主要是为了和 SpringBoot 中基于 REST 请求层所提供的两个用于处理全局异常的注解区分，这两个注解分别是 @ControllerAdvice 和 @RestControllerAdvice，通过注解的名字其实就能看出，SpringBoot 中，可以通过这两个注解来实现对 @Controller 和  @RestController 标注的类进行全局拦截，因为是 Controller 层面的 AOP 拦截，所以对于 Filter 中抛出的异常，通过 @ControllerAdvice 和 @RestControllerAdvice 两个注解定义的全局异常处理器是没法处理的。</p>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">下面就简单介绍下 @ControllerAdvice 和 @RestControllerAdvice 这两个注解的使用。</p>
-<h2 id="h-1" style="color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px; font-weight: bold; font-size: 1.4em;"><span style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;">全局异常处理</span></h2>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">自定义一个 OtherExcepetion ，然后再使用基于 @RestControllerAdvice 注解编写一个全局异常处理器。</p>
-<pre style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;"><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RestControllerAdvice</span><br><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-class" style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">class</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">OtherExceptionHandler</span>&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;这里只处理&nbsp;OtherException&nbsp;异常类型</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@ExceptionHandler</span>(value&nbsp;=&nbsp;OtherException.class)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;Response&lt;String&gt;&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">otherExceptionHandler</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(HttpServletRequest&nbsp;req,&nbsp;OtherException&nbsp;e)</span></span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Response&nbsp;response&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.setError(e.getMessage());<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>&nbsp;response;<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;当然你也可以定义处理其他异常的&nbsp;@ExceptionHandler</span><br>&#125;<br></code></pre>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">这种方式是没法处理 Filter 中异常的，只能处理 Controller 里面抛出的异常。</p>
-<h2 id="h-2" style="color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px; font-weight: bold; font-size: 1.4em;"><span style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;">小结</span></h2>
-<p style="font-size: inherit; color: inherit; line-height: inherit; padding: 0px; margin: 1.5em 0px;">本篇主要记录了在 SpringBoot 中如何保证 Filter 中抛出的异常能和业务一样以指定类型的对象返回，并对 SpringBoot 中提供的基于 Controller 层异常捕获处理进行简单介绍。两者处理异常的思路是不同的：</p>
-<ul style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; padding-left: 32px; list-style-type: disc;">
-<li style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; margin-bottom: 0.5em;"><span style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;">BasicErrorController：接受来自 /error 的异常请求处理，Filter 中抛出的异常先 forward 到 /error，然后处理。</span></li>
-<li style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; margin-bottom: 0.5em;"><span style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px;">@RestControllerAdvice：通过对于所有 @Controller 注解所标注的类进行 AOP 拦截，能够根据异常类型匹配具体的 ExceptionHandler 进行处理。</span></li>
-</ul></div>
+                    <h2
+                      id="h"
+                      style="
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                        font-weight: bold;
+                        font-size: 1.4em;
+                      "
+                    >
+                      <span
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                        "
+                        >背景</span
+                      >
+                    </h2>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      开发中遇到的一个问题：项目中所有的 rest 请求均是通过 json
+                      形式返回，且自定义了一个统一的数据结构对象，如下：
+                    </p>
+                    <pre
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        margin: 0px;
+                        padding: 0px;
+                      "
+                    ><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-class" style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">class</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">Response</span>&lt;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">T</span>&gt;&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;数据</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;T&nbsp;data;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;success&nbsp;标记</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">boolean</span>&nbsp;success;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;异常信息</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;String&nbsp;error;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;省略&nbsp;get&nbsp;set</span><br>&#125;<br></code></pre>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      这个结构非常常见，相信很多开发者都这么玩过。项目中 rest
+                      请求返回的所有结果都是以 Response 对象形式返回，如下：
+                    </p>
+                    <pre
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        margin: 0px;
+                        padding: 0px;
+                      "
+                    ><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RequestMapping</span>(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"test"</span>)<br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;Response&lt;String&gt;&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">testApi</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">()</span></span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;Response&lt;String&gt;&nbsp;result&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response&lt;&gt;();<br>&nbsp;&nbsp;&nbsp;&nbsp;result.setData(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"this&nbsp;is&nbsp;glmapper&nbsp;blog"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;result.setSuccess(<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">true</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>&nbsp;result;<br>&#125;<br></code></pre>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      这基本是最简化版的一个模型；出于安全考虑，现在有个需求是需要对每个请求做校验，比如校验请求中是否携带
+                      token
+                      这种。思路很简单就是通过拦截器或者过滤器的方式来对请求做拦截检验。
+                    </p>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      其实不管是拦截器还是过滤器，需要考虑的一个问题是，在校验不通过或者校验时产生异常的情况下，怎么把异常信息以项目中规定的统一数据格式返回，即返回
+                      Response。
+                    </p>
+                    <h2
+                      id="hresponse"
+                      style="
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                        font-weight: bold;
+                        font-size: 1.4em;
+                      "
+                    >
+                      <span
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                        "
+                        >直接将 Response 写回去</span
+                      >
+                    </h2>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      利用 ServletResponse 中提供的 PrintWriter，将 Response 以
+                      json 格式直接 print 回去。大概代码如下：
+                    </p>
+                    <pre
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        margin: 0px;
+                        padding: 0px;
+                      "
+                    ><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@Override</span><br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">void</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">doFilter</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(ServletRequest&nbsp;servletRequest,&nbsp;ServletResponse&nbsp;servletResponse,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FilterChain&nbsp;chain)</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">throws</span>&nbsp;IOException,&nbsp;ServletException&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;HttpServletRequest&nbsp;request&nbsp;=&nbsp;(HttpServletRequest)&nbsp;servletRequest;<br>&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;requestURI&nbsp;=&nbsp;request.getRequestURI();<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;mock&nbsp;测试异常请求</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">if</span>&nbsp;(requestURI.contains(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"testTokenError"</span>))&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Response&lt;String&gt;&nbsp;response&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response&lt;&gt;();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.setError(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"token&nbsp;validation&nbsp;fails"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;回写异常信息</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;returnResponse((HttpServletResponse)servletResponse,JSONObject.toJSONString(response));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;返回</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;chain.doFilter(servletRequest,&nbsp;servletResponse);<br>&#125;<br><br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">private</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">void</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">returnResponse</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(HttpServletResponse&nbsp;response,&nbsp;String&nbsp;data)</span>&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;PrintWriter&nbsp;writer&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">null</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;response.setCharacterEncoding(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"UTF-8"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;response.setContentType(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"text/html;&nbsp;charset=utf-8"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">try</span>&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writer&nbsp;=&nbsp;response.getWriter();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;通过&nbsp;PrintWriter&nbsp;将&nbsp;data&nbsp;数据直接&nbsp;print&nbsp;回去</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writer.print(data);<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">catch</span>&nbsp;(IOException&nbsp;e)&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">finally</span>&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">if</span>&nbsp;(writer&nbsp;!=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">null</span>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writer.close();<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&#125;<br></code></pre>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      这种方式比较简单和直接，print 异常数据之后直接
+                      return，不再继续过滤器链。
+                    </p>
+                    <h2
+                      id="hbasicerrorcontroller"
+                      style="
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                        font-weight: bold;
+                        font-size: 1.4em;
+                      "
+                    >
+                      <span
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                        "
+                        >抛出异常，通过 BasicErrorController 方式处理</span
+                      >
+                    </h2>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      这种方式是利用了 SpringBoot
+                      本身提供的能力，可以更优雅的处理错误信息。代码大致如下：
+                    </p>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      <strong
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                          font-weight: bold;
+                        "
+                        >1、是在 Filter 中就直接抛出一个异常</strong
+                      >
+                    </p>
+                    <pre
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        margin: 0px;
+                        padding: 0px;
+                      "
+                    ><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@Override</span><br><span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">void</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">doFilter</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(ServletRequest&nbsp;servletRequest,&nbsp;ServletResponse&nbsp;servletResponse,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FilterChain&nbsp;chain)</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">throws</span>&nbsp;IOException,&nbsp;ServletException&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;HttpServletRequest&nbsp;request&nbsp;=&nbsp;(HttpServletRequest)&nbsp;servletRequest;<br>&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;requestURI&nbsp;=&nbsp;request.getRequestURI();<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;mock&nbsp;测试异常请求</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">if</span>&nbsp;(requestURI.contains(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"testTokenError"</span>))&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;直接返回一个自定义的异常</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">throw</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;ValidationException(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"token&nbsp;validation&nbsp;fails"</span>);<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;chain.doFilter(servletRequest,&nbsp;servletResponse);<br>&#125;<br></code></pre>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      <strong
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                          font-weight: bold;
+                        "
+                        >2、定义一个异常处理的 Controller</strong
+                      >
+                    </p>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      这里定义一个 TokenErrorController ，继承自 SpringBoot
+                      提供的 BasicErrorController 这个类，然后重写 error
+                      这个方法（如果是页面的话，重写 errorHtml
+                      这个方法），用于返回自定义的 Response 数据。代码如下：
+                    </p>
+                    <pre
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        margin: 0px;
+                        padding: 0px;
+                      "
+                    ><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RestController</span><br><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-class" style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">class</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">TokenErrorController</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">extends</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">BasicErrorController</span>&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;重写&nbsp;error&nbsp;方法</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@Override</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RequestMapping</span>(produces&nbsp;=&nbsp;&#123;&nbsp;MediaType.APPLICATION_JSON_VALUE&nbsp;&#125;)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;ResponseEntity&lt;Map&lt;String,&nbsp;Object&gt;&gt;&nbsp;error(HttpServletRequest&nbsp;request)&nbsp;&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String,&nbsp;Object&gt;&nbsp;body&nbsp;=&nbsp;getErrorAttributes(request,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isIncludeStackTrace(request,&nbsp;MediaType.ALL));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpStatus&nbsp;status&nbsp;=&nbsp;getStatus(request);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;拿到&nbsp;body&nbsp;中的异常&nbsp;message&nbsp;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;message&nbsp;=&nbsp;body.get(<span class="hljs-string" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(238, 220, 112); word-wrap: inherit !important; word-break: inherit !important;">"message"</span>).toString();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;构建&nbsp;Response&nbsp;对象</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Response&nbsp;response&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;将&nbsp;message&nbsp;的&nbsp;设置到&nbsp;response&nbsp;</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.setError(message);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;返回</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;ResponseEntity(response,&nbsp;status);<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;省略其他无关代码</span><br>&#125;<br></code></pre>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      这样就可以实现在不改动之前工程任何代码的情况下只处理额外
+                      Filter 中抛出的异常了。需要注意的是，上述是通过
+                      BasicErrorController 来接受了 Filter
+                      抛出的异常信息，然后再通过 BasicErrorController
+                      将异常信息进行包装并且返回。为什么要提一下这个呢？主要是为了和
+                      SpringBoot 中基于 REST
+                      请求层所提供的两个用于处理全局异常的注解区分，这两个注解分别是
+                      @ControllerAdvice 和
+                      @RestControllerAdvice，通过注解的名字其实就能看出，SpringBoot
+                      中，可以通过这两个注解来实现对 @Controller 和
+                      @RestController 标注的类进行全局拦截，因为是 Controller
+                      层面的 AOP 拦截，所以对于 Filter 中抛出的异常，通过
+                      @ControllerAdvice 和 @RestControllerAdvice
+                      两个注解定义的全局异常处理器是没法处理的。
+                    </p>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      下面就简单介绍下 @ControllerAdvice 和
+                      @RestControllerAdvice 这两个注解的使用。
+                    </p>
+                    <h2
+                      id="h-1"
+                      style="
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                        font-weight: bold;
+                        font-size: 1.4em;
+                      "
+                    >
+                      <span
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                        "
+                        >全局异常处理</span
+                      >
+                    </h2>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      自定义一个 OtherExcepetion ，然后再使用基于
+                      @RestControllerAdvice 注解编写一个全局异常处理器。
+                    </p>
+                    <pre
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        margin: 0px;
+                        padding: 0px;
+                      "
+                    ><code class="java language-java hljs" style="overflow-wrap: break-word; margin: 0px 2px; line-height: 18px; font-size: 14px; font-weight: normal; word-spacing: 0px; letter-spacing: 0px; font-family: Consolas, Inconsolata, Courier, monospace; border-radius: 0px; color: rgb(169, 183, 198); background: rgb(40, 43, 46); overflow-x: auto; padding: 0.5em; white-space: pre !important; word-wrap: normal !important; word-break: normal !important; overflow: auto !important; display: -webkit-box !important;"><span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@RestControllerAdvice</span><br><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;<span class="hljs-class" style="font-size: inherit; color: inherit; line-height: inherit; margin: 0px; padding: 0px; word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">class</span>&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">OtherExceptionHandler</span>&nbsp;</span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;这里只处理&nbsp;OtherException&nbsp;异常类型</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-meta" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(91, 218, 237); word-wrap: inherit !important; word-break: inherit !important;">@ExceptionHandler</span>(value&nbsp;=&nbsp;OtherException.class)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-function" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;"><span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">public</span>&nbsp;Response&lt;String&gt;&nbsp;<span class="hljs-title" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(165, 218, 45); word-wrap: inherit !important; word-break: inherit !important;">otherExceptionHandler</span><span class="hljs-params" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(255, 152, 35); word-wrap: inherit !important; word-break: inherit !important;">(HttpServletRequest&nbsp;req,&nbsp;OtherException&nbsp;e)</span></span>&#123;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Response&nbsp;response&nbsp;=&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">new</span>&nbsp;Response();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.setError(e.getMessage());<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(248, 35, 117); word-wrap: inherit !important; word-break: inherit !important;">return</span>&nbsp;response;<br>&nbsp;&nbsp;&nbsp;&nbsp;&#125;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="font-size: inherit; line-height: inherit; margin: 0px; padding: 0px; color: rgb(128, 128, 128); word-wrap: inherit !important; word-break: inherit !important;">//&nbsp;当然你也可以定义处理其他异常的&nbsp;@ExceptionHandler</span><br>&#125;<br></code></pre>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      这种方式是没法处理 Filter 中异常的，只能处理 Controller
+                      里面抛出的异常。
+                    </p>
+                    <h2
+                      id="h-2"
+                      style="
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                        font-weight: bold;
+                        font-size: 1.4em;
+                      "
+                    >
+                      <span
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                        "
+                        >小结</span
+                      >
+                    </h2>
+                    <p
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        padding: 0px;
+                        margin: 1.5em 0px;
+                      "
+                    >
+                      本篇主要记录了在 SpringBoot 中如何保证 Filter
+                      中抛出的异常能和业务一样以指定类型的对象返回，并对
+                      SpringBoot 中提供的基于 Controller
+                      层异常捕获处理进行简单介绍。两者处理异常的思路是不同的：
+                    </p>
+                    <ul
+                      style="
+                        font-size: inherit;
+                        color: inherit;
+                        line-height: inherit;
+                        margin: 0px;
+                        padding: 0px;
+                        padding-left: 32px;
+                        list-style-type: disc;
+                      "
+                    >
+                      <li
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                          margin-bottom: 0.5em;
+                        "
+                      >
+                        <span
+                          style="
+                            font-size: inherit;
+                            color: inherit;
+                            line-height: inherit;
+                            margin: 0px;
+                            padding: 0px;
+                          "
+                          >BasicErrorController：接受来自 /error
+                          的异常请求处理，Filter 中抛出的异常先 forward 到
+                          /error，然后处理。</span
+                        >
+                      </li>
+                      <li
+                        style="
+                          font-size: inherit;
+                          color: inherit;
+                          line-height: inherit;
+                          margin: 0px;
+                          padding: 0px;
+                          margin-bottom: 0.5em;
+                        "
+                      >
+                        <span
+                          style="
+                            font-size: inherit;
+                            color: inherit;
+                            line-height: inherit;
+                            margin: 0px;
+                            padding: 0px;
+                          "
+                          >@RestControllerAdvice：通过对于所有 @Controller
+                          注解所标注的类进行 AOP
+                          拦截，能够根据异常类型匹配具体的 ExceptionHandler
+                          进行处理。</span
+                        >
+                      </li>
+                    </ul>
+                  </div>
 
-<blockquote>
-<p>水平有限，文章如果表述错误的地方，希望各位大佬给予指正~</p>
-</blockquote>
-</div><div class="article-licensing box"><div class="licensing-title"><p>SpringBoot 实践系列-Filter 中的异常处理和 Controller 中的异常处理</p><p><a href="http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/">http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>卫恒</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2020-02-12</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2022-04-23</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/SpringBoot/">SpringBoot</a><a class="link-muted mr-2" rel="tag" href="/tags/Exception/">Exception</a></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/zfb.JPG" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/pay.JPG" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/03/16/java/java-base-iterator-of-set/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">聊一聊 CopyOnWriteArraySet 的迭代删除</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/01/20/sofa/sofa-tracer-integration-analysis/"><span class="level-item">一文详解蚂蚁金服分布式链路组件 SOFATracer 的埋点机制</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
-            id: "517429cce8c9fa7242c4ce9cbfb81e40",
-            repo: "glmapper.github.io",
-            owner: "glmapper",
-            clientID: "d25147ddf77e70d7adfe",
-            clientSecret: "c10bbd1ba7a09c96e4106709107d4da85d60be78",
-            admin: ["glmapper"],
-            createIssueManually: false,
-            distractionFreeMode: true,
-            perPage: 20,
-            pagerDirection: "last",
-            
-            
-            enableHotKey: true,
-            language: "zh-CN",
+                  <blockquote>
+                    <p>
+                      水平有限，文章如果表述错误的地方，希望各位大佬给予指正~
+                    </p>
+                  </blockquote>
+                </div>
+                <div class="article-licensing box">
+                  <div class="licensing-title">
+                    <p>
+                      SpringBoot 实践系列-Filter 中的异常处理和 Controller
+                      中的异常处理
+                    </p>
+                    <p>
+                      <a
+                        href="http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/"
+                        >http://www.glmapper.com/2020/02/12/springboot/springboot-series-filter-exception/</a
+                      >
+                    </p>
+                  </div>
+                  <div class="licensing-meta level is-mobile">
+                    <div class="level-left">
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>作者</h6>
+                          <p>J.Queue</p>
+                        </div>
+                      </div>
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>发布于</h6>
+                          <p>2020-02-12</p>
+                        </div>
+                      </div>
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>更新于</h6>
+                          <p>2022-04-23</p>
+                        </div>
+                      </div>
+                      <div class="level-item is-narrow">
+                        <div>
+                          <h6>许可协议</h6>
+                          <p>
+                            <a
+                              class="icons"
+                              rel="noopener"
+                              target="_blank"
+                              title="Creative Commons"
+                              href="https://creativecommons.org/"
+                              ><i class="icon fab fa-creative-commons"></i
+                            ></a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="article-tags is-size-7 mb-4">
+                  <span class="mr-2">#</span
+                  ><a class="link-muted mr-2" rel="tag" href="/tags/SpringBoot/"
+                    >SpringBoot</a
+                  ><a class="link-muted mr-2" rel="tag" href="/tags/Exception/"
+                    >Exception</a
+                  >
+                </div>
+                <!--!-->
+              </article>
+            </div>
+            <div class="card">
+              <div class="card-content">
+                <h3 class="menu-label has-text-centered">
+                  喜欢这篇文章？打赏一下作者吧
+                </h3>
+                <div class="buttons is-centered">
+                  <a class="button donate" data-type="alipay"
+                    ><span class="icon is-small"
+                      ><i class="fab fa-alipay"></i></span
+                    ><span>支付宝</span
+                    ><span class="qrcode"
+                      ><img src="/img/zfb.JPG" alt="支付宝" /></span></a
+                  ><a class="button donate" data-type="wechat"
+                    ><span class="icon is-small"
+                      ><i class="fab fa-weixin"></i></span
+                    ><span>微信</span
+                    ><span class="qrcode"
+                      ><img src="/img/pay.JPG" alt="微信" /></span
+                  ></a>
+                </div>
+              </div>
+            </div>
+            <nav class="post-navigation mt-4 level is-mobile">
+              <div class="level-start">
+                <a
+                  class="article-nav-prev level level-item link-muted"
+                  href="/2020/03/16/java/java-base-iterator-of-set/"
+                  ><i class="level-item fas fa-chevron-left"></i
+                  ><span class="level-item"
+                    >聊一聊 CopyOnWriteArraySet 的迭代删除</span
+                  ></a
+                >
+              </div>
+              <div class="level-end">
+                <a
+                  class="article-nav-next level level-item link-muted"
+                  href="/2020/01/20/sofa/sofa-tracer-integration-analysis/"
+                  ><span class="level-item"
+                    >一文详解蚂蚁金服分布式链路组件 SOFATracer 的埋点机制</span
+                  ><i class="level-item fas fa-chevron-right"></i
+                ></a>
+              </div>
+            </nav>
+            <div class="card">
+              <div class="card-content">
+                <h3 class="title is-5">评论</h3>
+                <div id="comment-container"></div>
+                <link
+                  rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"
+                />
+                <script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script>
+                <script>
+                  var gitalk = new Gitalk({
+                    id: '517429cce8c9fa7242c4ce9cbfb81e40',
+                    repo: 'glmapper.github.io',
+                    owner: 'glmapper',
+                    clientID: 'd25147ddf77e70d7adfe',
+                    clientSecret: 'c10bbd1ba7a09c96e4106709107d4da85d60be78',
+                    admin: ['glmapper'],
+                    createIssueManually: false,
+                    distractionFreeMode: true,
+                    perPage: 20,
+                    pagerDirection: 'last',
+
+                    enableHotKey: true,
+                    language: 'zh-CN',
+                  })
+                  gitalk.render('comment-container')
+                </script>
+              </div>
+            </div>
+          </div>
+          <div
+            class="column column-left is-4-tablet is-4-desktop is-3-widescreen order-1 is-sticky"
+          >
+            <div class="card widget" data-type="profile">
+              <div class="card-content">
+                <nav class="level">
+                  <div class="level-item has-text-centered flex-shrink-1">
+                    <div>
+                      <figure class="image is-128x128 mx-auto mb-2">
+                        <img
+                          class="avatar is-rounded"
+                          src="/img/self.jpg"
+                          alt="J.Queue"
+                        />
+                      </figure>
+                      <p
+                        class="title is-size-4 is-block"
+                        style="line-height: inherit"
+                      >
+                        J.Queue
+                      </p>
+                      <p class="is-size-6 is-block">Java Developer</p>
+                      <p class="is-size-6 is-flex justify-content-center">
+                        <i class="fas fa-map-marker-alt mr-1"></i
+                        ><span>HeFei AnHui</span>
+                      </p>
+                    </div>
+                  </div>
+                </nav>
+                <nav class="level is-mobile">
+                  <div class="level-item has-text-centered is-marginless">
+                    <div>
+                      <p class="heading">文章</p>
+                      <a href="/archives"><p class="title">108</p></a>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered is-marginless">
+                    <div>
+                      <p class="heading">分类</p>
+                      <a href="/categories"><p class="title">17</p></a>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered is-marginless">
+                    <div>
+                      <p class="heading">标签</p>
+                      <a href="/tags"><p class="title">128</p></a>
+                    </div>
+                  </div>
+                </nav>
+                <div class="level">
+                  <a
+                    class="level-item button is-primary is-rounded"
+                    href="https://github.com/glmapper"
+                    target="_blank"
+                    rel="noopener"
+                    >关注我</a
+                  >
+                </div>
+                <div class="level is-mobile is-multiline">
+                  <a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="Github"
+                    href="https://github.com/glmapper"
+                    ><i class="fab fa-github"></i></a
+                  ><a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="Twitter"
+                    href="https://twitter.com"
+                    ><i class="fab fa-twitter"></i></a
+                  ><a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="weibo"
+                    href="https://weibo.com/u/2412872703"
+                    ><i class="fab fa-weibo"></i></a
+                  ><a
+                    class="level-item button is-transparent is-marginless"
+                    target="_blank"
+                    rel="noopener"
+                    title="RSS"
+                    href="/atom.xml"
+                    ><i class="fas fa-rss"></i
+                  ></a>
+                </div>
+              </div>
+            </div>
+            <div class="card widget" data-type="links">
+              <div class="card-content">
+                <div class="menu">
+                  <h3 class="menu-label">链接</h3>
+                  <ul class="menu-list">
+                    <li>
+                      <a
+                        class="level is-mobile"
+                        href="https://juejin.cn/user/3227821827961806"
+                        target="_blank"
+                        rel="noopener"
+                        ><span class="level-left"
+                          ><span class="level-item">掘金社区</span></span
+                        ><span class="level-right"
+                          ><span class="level-item tag">juejin.cn</span></span
+                        ></a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="level is-mobile"
+                        href="https://www.sofastack.tech/"
+                        target="_blank"
+                        rel="noopener"
+                        ><span class="level-left"
+                          ><span class="level-item">SOFAStack</span></span
+                        ><span class="level-right"
+                          ><span class="level-item tag"
+                            >www.sofastack.tech</span
+                          ></span
+                        ></a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card widget" id="toc" data-type="toc">
+              <div class="card-content">
+                <div class="menu">
+                  <h3 class="menu-label">目录</h3>
+                  <ul class="menu-list">
+                    <li>
+                      <a class="level is-mobile" href="#h"
+                        ><span class="level-left"
+                          ><span class="level-item">1</span
+                          ><span class="level-item">背景</span></span
+                        ></a
+                      >
+                    </li>
+                    <li>
+                      <a class="level is-mobile" href="#hresponse"
+                        ><span class="level-left"
+                          ><span class="level-item">2</span
+                          ><span class="level-item"
+                            >直接将 Response 写回去</span
+                          ></span
+                        ></a
+                      >
+                    </li>
+                    <li>
+                      <a class="level is-mobile" href="#hbasicerrorcontroller"
+                        ><span class="level-left"
+                          ><span class="level-item">3</span
+                          ><span class="level-item"
+                            >抛出异常，通过 BasicErrorController 方式处理</span
+                          ></span
+                        ></a
+                      >
+                    </li>
+                    <li>
+                      <a class="level is-mobile" href="#h-1"
+                        ><span class="level-left"
+                          ><span class="level-item">4</span
+                          ><span class="level-item">全局异常处理</span></span
+                        ></a
+                      >
+                    </li>
+                    <li>
+                      <a class="level is-mobile" href="#h-2"
+                        ><span class="level-left"
+                          ><span class="level-item">5</span
+                          ><span class="level-item">小结</span></span
+                        ></a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <script src="/js/toc.js" defer></script>
+            </div>
+            <div class="card widget" data-type="tags">
+              <div class="card-content">
+                <div class="menu">
+                  <h3 class="menu-label">标签</h3>
+                  <div class="field is-grouped is-grouped-multiline">
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/BeanDefinition/"
+                        ><span class="tag">BeanDefinition</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/BeanPostProcessor/"
+                        ><span class="tag">BeanPostProcessor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/BeanWrapper/"
+                        ><span class="tag">BeanWrapper</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/CAS/"
+                        ><span class="tag">CAS</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ClassLoader/"
+                        ><span class="tag">ClassLoader</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/CopyOnWriteArraySet/"
+                        ><span class="tag">CopyOnWriteArraySet</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Disruptor/"
+                        ><span class="tag">Disruptor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Embedded-Tomcat/"
+                        ><span class="tag">Embedded Tomcat</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Exception/"
+                        ><span class="tag">Exception</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Executor/"
+                        ><span class="tag">Executor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/FX-Application/"
+                        ><span class="tag">FX Application</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/FatJar/"
+                        ><span class="tag">FatJar</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Ioc/"
+                        ><span class="tag">Ioc</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/JAR/"
+                        ><span class="tag">JAR</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/JDK/"
+                        ><span class="tag">JDK</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/JUC/"
+                        ><span class="tag">JUC</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Kafka/"
+                        ><span class="tag">Kafka</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/MANIFEST-MF/"
+                        ><span class="tag">MANIFEST.MF</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Mockito/"
+                        ><span class="tag">Mockito</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Mysql/"
+                        ><span class="tag">Mysql</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/OOM/"
+                        ><span class="tag">OOM</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/OpenTracing/"
+                        ><span class="tag">OpenTracing</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/PropertySource/"
+                        ><span class="tag">PropertySource</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Readiness-Check/"
+                        ><span class="tag">Readiness Check</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ResourceLoader/"
+                        ><span class="tag">ResourceLoader</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/RestTemplate/"
+                        ><span class="tag">RestTemplate</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/RocketMQ/"
+                        ><span class="tag">RocketMQ</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SOFA/"
+                        ><span class="tag">SOFA</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SOFAArk/"
+                        ><span class="tag">SOFAArk</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SOFAStack/"
+                        ><span class="tag">SOFAStack</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/SpringBoot/"
+                        ><span class="tag">SpringBoot</span
+                        ><span class="tag">16</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/TestDouble/"
+                        ><span class="tag">TestDouble</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/ThreadPoolExecutor/"
+                        ><span class="tag">ThreadPoolExecutor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Tracer/"
+                        ><span class="tag">Tracer</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/Zipkin/"
+                        ><span class="tag">Zipkin</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ab-test/"
+                        ><span class="tag">ab test</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/actuator/"
+                        ><span class="tag">actuator</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/aop/"
+                        ><span class="tag">aop</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/api/"
+                        ><span class="tag">api</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/apollo/"
+                        ><span class="tag">apollo</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/bean-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">bean 扩展机制</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/bean-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+                        ><span class="tag">bean 生命周期</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/bootstrap/"
+                        ><span class="tag">bootstrap</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/cache/"
+                        ><span class="tag">cache</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/classloader/"
+                        ><span class="tag">classloader</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/config/"
+                        ><span class="tag">config</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/cookie/"
+                        ><span class="tag">cookie</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/curator/"
+                        ><span class="tag">curator</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/docker/"
+                        ><span class="tag">docker</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/eureka/"
+                        ><span class="tag">eureka</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/event/"
+                        ><span class="tag">event</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/feign/"
+                        ><span class="tag">feign</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/gateway/"
+                        ><span class="tag">gateway</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/gc/"
+                        ><span class="tag">gc</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/git/"
+                        ><span class="tag">git</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/github/"
+                        ><span class="tag">github</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/guava/"
+                        ><span class="tag">guava</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/http/"
+                        ><span class="tag">http</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/hystrix/"
+                        ><span class="tag">hystrix</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/java/"
+                        ><span class="tag">java</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/junit/"
+                        ><span class="tag">junit</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/jvm/"
+                        ><span class="tag">jvm</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/kafka/"
+                        ><span class="tag">kafka</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/linux/"
+                        ><span class="tag">linux</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/lock/"
+                        ><span class="tag">lock</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/log/"
+                        ><span class="tag">log</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/logback/"
+                        ><span class="tag">logback</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/maven/"
+                        ><span class="tag">maven</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/maven-debug/"
+                        ><span class="tag">maven debug</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/maven-plugin/"
+                        ><span class="tag">maven plugin</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/merge/"
+                        ><span class="tag">merge</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/microservices/"
+                        ><span class="tag">microservices</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/mock/"
+                        ><span class="tag">mock</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/mybatis/"
+                        ><span class="tag">mybatis</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/mysql/"
+                        ><span class="tag">mysql</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/nacos/"
+                        ><span class="tag">nacos</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/namespace/"
+                        ><span class="tag">namespace</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/netflix/"
+                        ><span class="tag">netflix</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/nginx/"
+                        ><span class="tag">nginx</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/oop-klass/"
+                        ><span class="tag">oop-klass</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/reactor/"
+                        ><span class="tag">reactor</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/rebase/"
+                        ><span class="tag">rebase</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/redis/"
+                        ><span class="tag">redis</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/rpc/"
+                        ><span class="tag">rpc</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/session/"
+                        ><span class="tag">session</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/set/"
+                        ><span class="tag">set</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/shell/"
+                        ><span class="tag">shell</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/slf4j/"
+                        ><span class="tag">slf4j</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/spring/"
+                        ><span class="tag">spring</span
+                        ><span class="tag">11</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/spring-cloud/"
+                        ><span class="tag">spring cloud</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/spring-mvc/"
+                        ><span class="tag">spring mvc</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/spring-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">spring 扩展机制</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/sql/"
+                        ><span class="tag">sql</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/ssh/"
+                        ><span class="tag">ssh</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/starter-%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">starter 机制</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/test/"
+                        ><span class="tag">test</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/testing/"
+                        ><span class="tag">testing</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/thread/"
+                        ><span class="tag">thread</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/tomcat/"
+                        ><span class="tag">tomcat</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/top/"
+                        ><span class="tag">top</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/typecheck/"
+                        ><span class="tag">typecheck</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/yapi/"
+                        ><span class="tag">yapi</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/yum/"
+                        ><span class="tag">yum</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a class="tags has-addons" href="/tags/zookeeper/"
+                        ><span class="tag">zookeeper</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E4%B8%AD%E5%8F%B0/"
+                        ><span class="tag">中台</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/"
+                        ><span class="tag">事件机制</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/"
+                        ><span class="tag">依赖注入</span
+                        ><span class="tag">3</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"
+                        ><span class="tag">分布式</span
+                        ><span class="tag">6</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/"
+                        ><span class="tag">分布式链路跟踪</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+                        ><span class="tag">反向代理</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%8F%8D%E5%B0%84/"
+                        ><span class="tag">反射</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%90%88%E8%82%A5/"
+                        ><span class="tag">合肥</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"
+                        ><span class="tag">并发编程</span
+                        ><span class="tag">5</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"
+                        ><span class="tag">微服务</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%9D%AD%E5%B7%9E/"
+                        ><span class="tag">杭州</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%9E%B6%E6%9E%84/"
+                        ><span class="tag">架构</span
+                        ><span class="tag">4</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%A1%86%E6%9E%B6/"
+                        ><span class="tag">框架</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%B3%9B%E5%9E%8B/"
+                        ><span class="tag">泛型</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+                        ><span class="tag">注册中心</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E6%B6%88%E6%81%AF/"
+                        ><span class="tag">消息</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/"
+                        ><span class="tag">类加载</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/"
+                        ><span class="tag">线程池</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/"
+                        ><span class="tag">自动配置</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"
+                        ><span class="tag">负载均衡</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%BF%90%E7%BB%B4/"
+                        ><span class="tag">运维</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E8%BF%AD%E4%BB%A3%E5%99%A8/"
+                        ><span class="tag">迭代器</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E9%85%8D%E7%BD%AE/"
+                        ><span class="tag">配置</span
+                        ><span class="tag">2</span></a
+                      >
+                    </div>
+                    <div class="control">
+                      <a
+                        class="tags has-addons"
+                        href="/tags/%E9%9B%86%E7%BE%A4%E9%80%89%E4%B8%BB/"
+                        ><span class="tag">集群选主</span
+                        ><span class="tag">1</span></a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="column-right-shadow is-hidden-widescreen is-sticky"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <div class="container">
+        <div class="level">
+          <div class="level-start">
+            <a class="footer-logo is-block mb-2" href="/">J.Queue的技术博客</a>
+            <p class="is-size-7">
+              <span>&copy; 2022 J.Queue</span>  Powered by
+              <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a
+              > &amp; <a
+                href="https://github.com/ppoffice/hexo-theme-icarus"
+                target="_blank"
+                rel="noopener"
+                >Icarus</a
+              ><br /><span id="busuanzi_container_site_uv"
+                >共<span id="busuanzi_value_site_uv">0</span>个访客</span
+              >
+            </p>
+          </div>
+          <div class="level-end">
+            <div class="field has-addons">
+              <p class="control">
+                <a
+                  class="button is-transparent is-large"
+                  target="_blank"
+                  rel="noopener"
+                  title="Download on GitHub"
+                  href="https://github.com/glmapper"
+                  ><i class="fab fa-github"></i
+                ></a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+    <script>
+      moment.locale('zh-CN')
+    </script>
+    <script>
+      var IcarusThemeSettings = {
+        article: {
+          highlight: {
+            clipboard: false,
+            fold: '',
+          },
+        },
+      }
+    </script>
+    <script src="/js/column.js"></script>
+    <script src="/js/animation.js"></script>
+    <a id="back-to-top" title="回到顶端" href="javascript:;"
+      ><i class="fas fa-chevron-up"></i
+    ></a>
+    <script src="/js/back_to_top.js" defer></script>
+    <!--!--><!--!--><!--!--><!--!-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js"
+      defer
+    ></script>
+    <script>
+      window.addEventListener('load', () => {
+        window.cookieconsent.initialise({
+          type: 'info',
+          theme: 'edgeless',
+          static: false,
+          position: 'bottom-left',
+          content: {
+            message: '此网站使用Cookie来改善您的体验。',
+            dismiss: '知道了！',
+            allow: '允许使用Cookie',
+            deny: '拒绝',
+            link: '了解更多',
+            policy: 'Cookie政策',
+            href: 'https://www.cookiesandyou.com/',
+          },
+          palette: {
+            popup: {
+              background: '#edeff5',
+              text: '#838391',
+            },
+            button: {
+              background: '#4b81e8',
+            },
+          },
         })
-        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/img/self.jpg" alt="卫恒"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">卫恒</p><p class="is-size-6 is-block">Java Developer</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>HeFei AnHui</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">108</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">17</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">128</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/glmapper" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/glmapper"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="weibo" href="https://weibo.com/u/2412872703"><i class="fab fa-weibo"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/atom.xml"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://juejin.cn/user/3227821827961806" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">掘金社区</span></span><span class="level-right"><span class="level-item tag">juejin.cn</span></span></a></li><li><a class="level is-mobile" href="https://www.sofastack.tech/" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">SOFAStack</span></span><span class="level-right"><span class="level-item tag">www.sofastack.tech</span></span></a></li></ul></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#h"><span class="level-left"><span class="level-item">1</span><span class="level-item">背景</span></span></a></li><li><a class="level is-mobile" href="#hresponse"><span class="level-left"><span class="level-item">2</span><span class="level-item">直接将 Response 写回去</span></span></a></li><li><a class="level is-mobile" href="#hbasicerrorcontroller"><span class="level-left"><span class="level-item">3</span><span class="level-item">抛出异常，通过 BasicErrorController 方式处理</span></span></a></li><li><a class="level is-mobile" href="#h-1"><span class="level-left"><span class="level-item">4</span><span class="level-item">全局异常处理</span></span></a></li><li><a class="level is-mobile" href="#h-2"><span class="level-left"><span class="level-item">5</span><span class="level-item">小结</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/BeanDefinition/"><span class="tag">BeanDefinition</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/BeanPostProcessor/"><span class="tag">BeanPostProcessor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/BeanWrapper/"><span class="tag">BeanWrapper</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CAS/"><span class="tag">CAS</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ClassLoader/"><span class="tag">ClassLoader</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/CopyOnWriteArraySet/"><span class="tag">CopyOnWriteArraySet</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Disruptor/"><span class="tag">Disruptor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Embedded-Tomcat/"><span class="tag">Embedded Tomcat</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Exception/"><span class="tag">Exception</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Executor/"><span class="tag">Executor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/FX-Application/"><span class="tag">FX Application</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/FatJar/"><span class="tag">FatJar</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Ioc/"><span class="tag">Ioc</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JAR/"><span class="tag">JAR</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JDK/"><span class="tag">JDK</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JUC/"><span class="tag">JUC</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Kafka/"><span class="tag">Kafka</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/MANIFEST-MF/"><span class="tag">MANIFEST.MF</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Mockito/"><span class="tag">Mockito</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Mysql/"><span class="tag">Mysql</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OOM/"><span class="tag">OOM</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenTracing/"><span class="tag">OpenTracing</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/PropertySource/"><span class="tag">PropertySource</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Readiness-Check/"><span class="tag">Readiness Check</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ResourceLoader/"><span class="tag">ResourceLoader</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/RestTemplate/"><span class="tag">RestTemplate</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/RocketMQ/"><span class="tag">RocketMQ</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SOFA/"><span class="tag">SOFA</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SOFAArk/"><span class="tag">SOFAArk</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SOFAStack/"><span class="tag">SOFAStack</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SpringBoot/"><span class="tag">SpringBoot</span><span class="tag">16</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TestDouble/"><span class="tag">TestDouble</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ThreadPoolExecutor/"><span class="tag">ThreadPoolExecutor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Tracer/"><span class="tag">Tracer</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Zipkin/"><span class="tag">Zipkin</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ab-test/"><span class="tag">ab test</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/actuator/"><span class="tag">actuator</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/aop/"><span class="tag">aop</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/api/"><span class="tag">api</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/apollo/"><span class="tag">apollo</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/bean-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"><span class="tag">bean 扩展机制</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/bean-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"><span class="tag">bean 生命周期</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/bootstrap/"><span class="tag">bootstrap</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/cache/"><span class="tag">cache</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/classloader/"><span class="tag">classloader</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/config/"><span class="tag">config</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/cookie/"><span class="tag">cookie</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/curator/"><span class="tag">curator</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/docker/"><span class="tag">docker</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/eureka/"><span class="tag">eureka</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/event/"><span class="tag">event</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/feign/"><span class="tag">feign</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/gateway/"><span class="tag">gateway</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/gc/"><span class="tag">gc</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/git/"><span class="tag">git</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/github/"><span class="tag">github</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/guava/"><span class="tag">guava</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/http/"><span class="tag">http</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/hystrix/"><span class="tag">hystrix</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/junit/"><span class="tag">junit</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/jvm/"><span class="tag">jvm</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/kafka/"><span class="tag">kafka</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/linux/"><span class="tag">linux</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/lock/"><span class="tag">lock</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/log/"><span class="tag">log</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/logback/"><span class="tag">logback</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/maven/"><span class="tag">maven</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/maven-debug/"><span class="tag">maven debug</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/maven-plugin/"><span class="tag">maven plugin</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/merge/"><span class="tag">merge</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/microservices/"><span class="tag">microservices</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mock/"><span class="tag">mock</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mybatis/"><span class="tag">mybatis</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/mysql/"><span class="tag">mysql</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/nacos/"><span class="tag">nacos</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/namespace/"><span class="tag">namespace</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/netflix/"><span class="tag">netflix</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/nginx/"><span class="tag">nginx</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/oop-klass/"><span class="tag">oop-klass</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/reactor/"><span class="tag">reactor</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/rebase/"><span class="tag">rebase</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/redis/"><span class="tag">redis</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/rpc/"><span class="tag">rpc</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/session/"><span class="tag">session</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/set/"><span class="tag">set</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/shell/"><span class="tag">shell</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/slf4j/"><span class="tag">slf4j</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring/"><span class="tag">spring</span><span class="tag">11</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring-cloud/"><span class="tag">spring cloud</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring-mvc/"><span class="tag">spring mvc</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/spring-%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"><span class="tag">spring 扩展机制</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/sql/"><span class="tag">sql</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ssh/"><span class="tag">ssh</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/starter-%E6%9C%BA%E5%88%B6/"><span class="tag">starter 机制</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/test/"><span class="tag">test</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/testing/"><span class="tag">testing</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/thread/"><span class="tag">thread</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/tomcat/"><span class="tag">tomcat</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/top/"><span class="tag">top</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/typecheck/"><span class="tag">typecheck</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/yapi/"><span class="tag">yapi</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/yum/"><span class="tag">yum</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/zookeeper/"><span class="tag">zookeeper</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%B8%AD%E5%8F%B0/"><span class="tag">中台</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/"><span class="tag">事件机制</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/"><span class="tag">依赖注入</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"><span class="tag">分布式</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/"><span class="tag">分布式链路跟踪</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"><span class="tag">反向代理</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%8F%8D%E5%B0%84/"><span class="tag">反射</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%90%88%E8%82%A5/"><span class="tag">合肥</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"><span class="tag">并发编程</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"><span class="tag">微服务</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9D%AD%E5%B7%9E/"><span class="tag">杭州</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9E%B6%E6%9E%84/"><span class="tag">架构</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%A1%86%E6%9E%B6/"><span class="tag">框架</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B3%9B%E5%9E%8B/"><span class="tag">泛型</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"><span class="tag">注册中心</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B6%88%E6%81%AF/"><span class="tag">消息</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%B1%BB%E5%8A%A0%E8%BD%BD/"><span class="tag">类加载</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/"><span class="tag">线程池</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/"><span class="tag">自动配置</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"><span class="tag">负载均衡</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%BF%90%E7%BB%B4/"><span class="tag">运维</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%BF%AD%E4%BB%A3%E5%99%A8/"><span class="tag">迭代器</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%85%8D%E7%BD%AE/"><span class="tag">配置</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%9B%86%E7%BE%A4%E9%80%89%E4%B8%BB/"><span class="tag">集群选主</span><span class="tag">1</span></a></div></div></div></div></div><div class="column-right-shadow is-hidden-widescreen is-sticky"></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">磊叔的技术博客</a><p class="is-size-7"><span>&copy; 2022 卫恒</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/glmapper"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
-            article: {
-                highlight: {
-                    clipboard: false,
-                    fold: ''
-                }
-            }
-        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
-      window.cookieconsent.initialise({
-        type: "info",
-        theme: "edgeless",
-        static: false,
-        position: "bottom-left",
-        content: {
-          message: "此网站使用Cookie来改善您的体验。",
-          dismiss: "知道了！",
-          allow: "允许使用Cookie",
-          deny: "拒绝",
-          link: "了解更多",
-          policy: "Cookie政策",
-          href: "https://www.cookiesandyou.com/",
-        },
-        palette: {
-          popup: {
-            background: "#edeff5",
-            text: "#838391"
-          },
-          button: {
-            background: "#4b81e8"
-          },
-        },
-      });
-    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
-            if (typeof $.fn.lightGallery === 'function') {
-                $('.article').lightGallery({ selector: '.gallery-item' });
-            }
-            if (typeof $.fn.justifiedGallery === 'function') {
-                if ($('.justified-gallery > p > .gallery-item').length) {
-                    $('.justified-gallery > p > .gallery-item').unwrap();
-                }
-                $('.justified-gallery').justifiedGallery();
-            }
-        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
-            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
-        });</script></body></html>
+      })
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"
+      defer
+    ></script>
+    <script>
+      window.addEventListener('load', () => {
+        if (typeof $.fn.lightGallery === 'function') {
+          $('.article').lightGallery({ selector: '.gallery-item' })
+        }
+        if (typeof $.fn.justifiedGallery === 'function') {
+          if ($('.justified-gallery > p > .gallery-item').length) {
+            $('.justified-gallery > p > .gallery-item').unwrap()
+          }
+          $('.justified-gallery').justifiedGallery()
+        }
+      })
+    </script>
+    <!--!--><!--!--><!--!--><!--!--><!--!-->
+    <script src="/js/main.js" defer></script>
+    <div class="searchbox">
+      <div class="searchbox-container">
+        <div class="searchbox-header">
+          <div class="searchbox-input-container">
+            <input
+              class="searchbox-input"
+              type="text"
+              placeholder="想要查找什么..."
+            />
+          </div>
+          <a class="searchbox-close" href="javascript:;">×</a>
+        </div>
+        <div class="searchbox-body"></div>
+      </div>
+    </div>
+    <script src="/js/insight.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        loadInsight(
+          { contentUrl: '/content.json' },
+          {
+            hint: '想要查找什么...',
+            untitled: '(无标题)',
+            posts: '文章',
+            pages: '页面',
+            categories: '分类',
+            tags: '标签',
+          }
+        )
+      })
+    </script>
+  </body>
+</html>

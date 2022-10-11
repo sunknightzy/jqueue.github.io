@@ -1,1 +1,9 @@
-{"name":"磊叔的技术博客","short_name":null,"start_url":"/index.html","theme_color":null,"background_color":null,"display":"standalone","icons":[{"src":"","sizes":"","type":null}]}
+{
+  "name": "J.Queue的技术博客",
+  "short_name": null,
+  "start_url": "/index.html",
+  "theme_color": null,
+  "background_color": null,
+  "display": "standalone",
+  "icons": [{ "src": "", "sizes": "", "type": null }]
+}
